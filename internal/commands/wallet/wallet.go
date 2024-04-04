@@ -3,6 +3,7 @@ package wallet
 import (
 	"encoding/hex"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
@@ -54,9 +55,16 @@ func createGenerateWalletCommand(props *props.AppProps) *cli.Command {
 				Usage:   "Specify if you want to return a hex version of the private key",
 				Value:   false,
 			},
+			&cli.StringFlag{
+				Name:    "file",
+				Aliases: []string{"f"},
+				Usage:   "Specify the csv file location to output contents to (default: stdout)",
+				Value:   "",
+			},
 		},
 		Action: func(c *cli.Context) error {
 			networkType := c.String("networkType")
+			outputFile := c.String("file")
 			amount := c.Int("amount")
 			private := c.Bool("private")
 
@@ -89,11 +97,40 @@ func createGenerateWalletCommand(props *props.AppProps) *cli.Command {
 				addresses = append(addresses, Address{PrivateKey: encoded, Address: addr})
 			}
 
+			// Check if outputFile is specified and open file if necessary
+			var file *os.File
+			var err error
+			if outputFile != "" {
+				file, err = os.Create(outputFile)
+				if err != nil {
+					props.Logger.Err(err).Msg("Failed to create file")
+				}
+				defer file.Close()
+			}
+
 			for _, addr := range addresses {
 				if private {
-					fmt.Printf("%s,%s\n", addr.Address, addr.PrivateKey)
+					if file != nil {
+						// Write to file
+						_, err := file.WriteString(fmt.Sprintf("%s,%s\n", addr.Address, addr.PrivateKey))
+						if err != nil {
+							return fmt.Errorf("failed to write to file: %v", err)
+						}
+					} else {
+						// Print to stdout
+						fmt.Printf("%s,%s\n", addr.Address, addr.PrivateKey)
+					}
 				} else {
-					fmt.Println(addr.Address)
+					if file != nil {
+						// Write to file
+						_, err := file.WriteString(fmt.Sprintf("%s\n", addr.Address))
+						if err != nil {
+							return fmt.Errorf("failed to write to file: %v", err)
+						}
+					} else {
+						// Print to stdout
+						fmt.Println(addr.Address)
+					}
 				}
 			}
 
