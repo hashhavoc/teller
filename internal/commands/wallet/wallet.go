@@ -75,7 +75,7 @@ func createGenerateWalletCommand(props *props.AppProps) *cli.Command {
 			case "testnet":
 				networkVersion = stacks.TestnetSingleSig
 			default:
-				fmt.Println("Invalid network type. Please specify either 'mainnet' or 'testnet'.")
+				props.Logger.Error().Msg("Invalid network type. Please specify either 'mainnet' or 'testnet'.")
 				return nil
 			}
 
@@ -97,7 +97,6 @@ func createGenerateWalletCommand(props *props.AppProps) *cli.Command {
 				addresses = append(addresses, Address{PrivateKey: encoded, Address: addr})
 			}
 
-			// Check if outputFile is specified and open file if necessary
 			var file *os.File
 			var err error
 			if outputFile != "" {
@@ -114,7 +113,7 @@ func createGenerateWalletCommand(props *props.AppProps) *cli.Command {
 						// Write to file
 						_, err := file.WriteString(fmt.Sprintf("%s,%s\n", addr.Address, addr.PrivateKey))
 						if err != nil {
-							return fmt.Errorf("failed to write to file: %v", err)
+							props.Logger.Err(err).Msg("Failed to write to file")
 						}
 					} else {
 						// Print to stdout
@@ -125,7 +124,7 @@ func createGenerateWalletCommand(props *props.AppProps) *cli.Command {
 						// Write to file
 						_, err := file.WriteString(fmt.Sprintf("%s\n", addr.Address))
 						if err != nil {
-							return fmt.Errorf("failed to write to file: %v", err)
+							props.Logger.Err(err).Msg("Failed to write to file")
 						}
 					} else {
 						// Print to stdout
