@@ -1,0 +1,8 @@
+endpoints:
+  # mainnet is https://api.hiro.so/
+  # testnet is https://api.testnet.hiro.so/
+  hiro: https://api.hiro.so
+  alex: https://api.alexgo.io
+wallets:
+  - SPZY2PR8WW2N3JSAWTFPJGTA7DW1AGFKCC0VHMVK
+  - SP24478XYAB7DZF7850JWVYQRGGRKDWXF7WKKRY30

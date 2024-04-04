@@ -1,0 +1,69 @@
+project_name: teller
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    main: ./cmd/teller
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    binary: teller
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Tag }}_{{- .Os }}_{{- .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+brews:
+  - name: teller
+    repository:
+      owner: hashhavoc
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+    homepage: "https://github.com/hashhavoc/teller"
+    description: "CLI for STX"
+  # NOTE: We are using .Version instead of .Tag because homebrew has weird semver parsing rules and won't be able to
+  #       install versioned releases that has a `v` character before the version number.
+  - name: "teller@{{ .Version }}"
+    repository:
+      owner: hashhavoc
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} versioned release {{ .Tag }}"
+    homepage: "https://github.com/hashhavoc/teller"
+    description: "CLI for STX"
+
+release:
+  draft: false
+  target_commitish: "{{ .Commit }}"
+  prerelease: auto
+  mode: replace
+  header: |
+    ## Teller `{{ .Tag }}` released!
+  footer: |
+    Your PRs & issues are welcome!
+  disable: false
+  skip_upload: false
