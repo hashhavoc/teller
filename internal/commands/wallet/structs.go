@@ -5,3 +5,8 @@ type TokenBalanceInfo struct {
 	FungibleTokenBalances  map[string]int64
 	NonFungibleTokenCounts map[string]int64
 }
+
+type Address struct {
+	PrivateKey string
+	Address    string
+}

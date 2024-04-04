@@ -5,6 +5,8 @@ import (
 	"log"
 	"os/exec"
 	"runtime"
+
+	"github.com/btcsuite/btcd/btcec/v2"
 )
 
 func OpenBrowser(url string) {
@@ -23,6 +25,27 @@ func OpenBrowser(url string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// StacksPrivateKey represents a private key with a flag indicating if it should generate compressed public keys.
+type StacksPrivateKey struct {
+	PrivateKey *btcec.PrivateKey
+	Compressed bool
+}
+
+// makeRandomPrivKey generates a new random StacksPrivateKey.
+func MakeRandomPrivKey() (*StacksPrivateKey, error) {
+	privKey, err := btcec.NewPrivateKey()
+	if err != nil {
+		return nil, err
+	}
+
+	// Assuming you want to generate compressed public keys by default.
+	// Adjust based on your needs.
+	return &StacksPrivateKey{
+		PrivateKey: privKey,
+		Compressed: true,
+	}, nil
 }
 
 // // Automatically detect and decode a hex string.

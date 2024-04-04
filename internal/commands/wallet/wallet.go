@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"encoding/hex"
 	"fmt"
 	"strconv"
 	"strings"
@@ -10,6 +11,8 @@ import (
 	"github.com/hashhavoc/teller/internal/commands/props"
 	"github.com/hashhavoc/teller/internal/common"
 	"github.com/hashhavoc/teller/pkg/api/hiro"
+	"github.com/hashhavoc/teller/pkg/utils"
+	"github.com/hashhavoccat/stacks-go"
 	"github.com/urfave/cli/v2"
 )
 
@@ -22,6 +25,79 @@ func CreateWalletCommand(props *props.AppProps) *cli.Command {
 			createBalancesCommand(props),
 			createAddWalletCommand(props),
 			createRemoveWalletCommand(props),
+			createGenerateWalletCommand(props),
+		},
+	}
+}
+
+// CreateGreetCommand creates a new CLI command for greeting
+func createGenerateWalletCommand(props *props.AppProps) *cli.Command {
+	return &cli.Command{
+		Name:  "gen",
+		Usage: "Create a endless amounts of STX wallet addresses",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "networkType",
+				Aliases: []string{"n"},
+				Usage:   "Specify the network type",
+				Value:   "mainnet",
+			},
+			&cli.IntFlag{
+				Name:     "amount",
+				Aliases:  []string{"a"},
+				Usage:    "Specify the amount",
+				Required: true,
+			},
+			&cli.BoolFlag{
+				Name:    "private",
+				Aliases: []string{"p"},
+				Usage:   "Specify if you want to return a hex version of the private key",
+				Value:   false,
+			},
+		},
+		Action: func(c *cli.Context) error {
+			networkType := c.String("networkType")
+			amount := c.Int("amount")
+			private := c.Bool("private")
+
+			var networkVersion int
+			switch networkType {
+			case "mainnet":
+				networkVersion = stacks.MainnetSingleSig
+			case "testnet":
+				networkVersion = stacks.TestnetSingleSig
+			default:
+				fmt.Println("Invalid network type. Please specify either 'mainnet' or 'testnet'.")
+				return nil
+			}
+
+			var addresses []Address
+			for i := 0; i < amount; i++ {
+				privKey, err := utils.MakeRandomPrivKey()
+				if err != nil {
+					props.Logger.Err(err).Msg("Error generating private key")
+					continue
+				}
+
+				encoded := hex.EncodeToString(privKey.PrivateKey.Serialize())
+
+				addr, err := stacks.NewAddress(encoded, networkVersion)
+				if err != nil {
+					props.Logger.Err(err).Msg("Error generating address")
+					continue
+				}
+				addresses = append(addresses, Address{PrivateKey: encoded, Address: addr})
+			}
+
+			for _, addr := range addresses {
+				if private {
+					fmt.Printf("%s,%s\n", addr.Address, addr.PrivateKey)
+				} else {
+					fmt.Println(addr.Address)
+				}
+			}
+
+			return nil
 		},
 	}
 }
