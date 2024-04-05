@@ -23,19 +23,11 @@ type ConfigEndpoints struct {
 	StxTools string `yaml:"stxtools"`
 }
 
-func NewConfig(path string) (*Config, error) {
+func NewConfig(path string) *Config {
 	config := &Config{
 		Path: path,
 	}
-	err := config.ReadConfig()
-	if err != nil {
-		// Initialize with default values if needed
-		config.Endpoints.Hiro = hiro.DefaultApiBase
-		config.Endpoints.Alex = alex.DefaultApiBase
-		config.Endpoints.StxTools = stxtools.DefaultApiBase
-		// Optionally handle file not found differently or initialize other defaults
-	}
-	return config, err
+	return config
 }
 
 func (c *Config) ReadConfig() error {

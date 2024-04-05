@@ -3,6 +3,7 @@ endpoints:
   # testnet is https://api.testnet.hiro.so/
   hiro: https://api.hiro.so
   alex: https://api.alexgo.io
+  stxtools: https://api.stxtools.io
 wallets:
   - SPZY2PR8WW2N3JSAWTFPJGTA7DW1AGFKCC0VHMVK
   - SP24478XYAB7DZF7850JWVYQRGGRKDWXF7WKKRY30

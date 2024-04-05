@@ -1,10 +1,13 @@
 package commands
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/hashhavoc/teller/internal/commands/contract"
 	"github.com/hashhavoc/teller/internal/commands/dex"
+	"github.com/hashhavoc/teller/internal/commands/initialize"
 	"github.com/hashhavoc/teller/internal/commands/props"
 	"github.com/hashhavoc/teller/internal/commands/token"
 	"github.com/hashhavoc/teller/internal/commands/wallet"
@@ -18,10 +21,16 @@ import (
 )
 
 func CreateApp(glog log.Logger) *cli.App {
-	configPath := "config.yaml"
-	config, err := config.NewConfig(configPath)
+	dirname, err := os.UserHomeDir()
 	if err != nil {
-		glog.Debug().Err(err).Msg("Failed to initialize config")
+		glog.Fatal().Err(err).Msg("Failed to get user home directory")
+	}
+	configPath := fmt.Sprintf("%s/.teller.yaml", dirname)
+	config := config.NewConfig(configPath)
+
+	err = config.ReadConfig()
+	if err != nil {
+		glog.Debug().Err(err).Msg("Failed to read config")
 	}
 
 	hiroClient := hiro.NewAPIClient(config.Endpoints.Hiro)
@@ -42,6 +51,7 @@ func CreateApp(glog log.Logger) *cli.App {
 		EnableBashCompletion: true,
 		Suggest:              true,
 		Commands: []*cli.Command{
+			initialize.CreateInitCommand(props),
 			contract.CreateContractsCommand(props),
 			token.CreateTokenCommand(props),
 			wallet.CreateWalletCommand(props),
