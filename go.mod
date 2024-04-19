@@ -51,3 +51,5 @@ require (
 	golang.org/x/term v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )
+
+replace github.com/hashhavoc/teller/internal/commands/transactions => github.com/whoabuddy/teller/internal/commands/transactions feat/download-transactions

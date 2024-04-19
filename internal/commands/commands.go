@@ -10,7 +10,7 @@ import (
 	"github.com/hashhavoc/teller/internal/commands/initialize"
 	"github.com/hashhavoc/teller/internal/commands/props"
 	"github.com/hashhavoc/teller/internal/commands/token"
-	"github.com/whoabuddy/teller/internal/commands/transactions"
+	"github.com/hashhavoc/teller/internal/commands/transactions"
 	"github.com/hashhavoc/teller/internal/commands/wallet"
 	"github.com/hashhavoc/teller/internal/config"
 	"github.com/hashhavoc/teller/pkg/api/alex"
