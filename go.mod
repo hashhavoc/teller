@@ -52,4 +52,4 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 )
 
-replace github.com/hashhavoc/teller/internal/commands/transactions => github.com/yourusername/teller/internal/commands/transactions@feat/download-transactions
+replace github.com/hashhavoc/teller/internal/commands/transactions => github.com/yourusername/teller/internal/commands/transactions v0.0.0-feat-download-transactions
