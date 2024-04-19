@@ -49,7 +49,7 @@ func syncTransactions(props *props.AppProps, principal string) error {
 	// Fetch transactions from the Hiro API until the total matches the local count
 	var allTxs []Transaction
 	offset := 0
-	limit := 200
+	limit := 50
 
 	for {
 		url := fmt.Sprintf("%s/extended/v1/address/%s/transactions?limit=%d&offset=%d", props.Config.Endpoints.Hiro, principal, limit, offset)
