@@ -136,12 +136,11 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			case "enter":
 				selectedRow := m.table.SelectedRow()
-				contract, err := m.client.GetContractDetails(selectedRow[4])
-				if err != nil {
-					m.logger.Error().Err(err).Msg("Failed to get contract details")
-					return m, nil
-				}
-				utils.OpenBrowser("https://explorer.hiro.so/txid/" + contract.TxID)
+				name := strings.ReplaceAll(selectedRow[0], "•", "")
+				utils.OpenBrowser("https://www.ord.io/" + name)
+				// name := strings.ReplaceAll(, "•", "")
+				// utils.OpenBrowser("https://ordinals.com/rune/" + selectedRow[0])
+
 			case "h":
 				m.selected = m.table.SelectedRow()
 				holders, err := m.client.GetTokenHolders(m.selected[4], 0)
