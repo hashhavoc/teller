@@ -2,6 +2,7 @@ endpoints:
   # mainnet is https://api.hiro.so/
   # testnet is https://api.testnet.hiro.so/
   hiro: https://api.hiro.so
+  ord: http://localhost:8080
   alex: https://api.alexgo.io
   stxtools: https://api.stxtools.io
 wallets:

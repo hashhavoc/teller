@@ -124,3 +124,4 @@ config.yaml
 *.clar
 *.csv
 teller
+*transactions.json
