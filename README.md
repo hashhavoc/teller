@@ -14,7 +14,7 @@ brew install hashhavoc/tap/teller
 
 ### Dependencies
 
-You will need to install some packages on linux to handle the build process:
+You will need to install some packages on linux to handle the build process: This is needed for the clipboard functionality.
 
 ```sh
 sudo apt-get install libx11-dev
