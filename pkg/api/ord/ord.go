@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
+
+	"github.com/hashhavoc/teller/internal/common"
 )
 
 const DefaultApiBase = "http://localhost:8080"
@@ -65,18 +68,35 @@ func (c *APIClient) GetAllRunes() ([]Entry, error) {
 			}
 			e.Details.Block = int64(details["block"].(float64))
 			e.Details.Burned = int64(details["burned"].(float64))
-			e.Details.Divisibility = int64(details["divisibility"].(float64))
+			e.Details.Divisibility = int(details["divisibility"].(float64))
 			e.Details.Etching = details["etching"].(string)
 			e.Details.Mints = int64(details["mints"].(float64))
 			e.Details.Number = int64(details["number"].(float64))
-			e.Details.Premine = float64(details["premine"].(float64))
+
+			premine := details["premine"].(float64)
+			stringger := fmt.Sprintf("%.0f", premine)
+			premineString := common.InsertDecimal(stringger, e.Details.Divisibility)
+			stringger2, _ := strconv.ParseFloat(premineString, 64)
+			premineInt64, _ := strconv.ParseInt(fmt.Sprintf("%.0f", stringger2), 10, 64)
+			e.Details.Premine = premineInt64
+
 			e.Details.SpacedRune = details["spaced_rune"].(string)
+			e.Details.Timestamp = int64(details["timestamp"].(float64))
 			if terms, ok := details["terms"].(map[string]interface{}); ok {
-				//print out the type of the terms["amount"]
+				e.Details.TermsEnabled = true
 				if amount, ok := terms["amount"].(float64); ok {
-					e.Details.Terms.Amount = amount
-					// e.Details.Terms.AmountStr = amount.String()
+					stringger := fmt.Sprintf("%.0f", amount)
+					premineString := common.InsertDecimal(stringger, e.Details.Divisibility)
+					stringger2, _ := strconv.ParseFloat(premineString, 64)
+					s, _ := strconv.ParseInt(fmt.Sprintf("%.0f", stringger2), 10, 64)
+					e.Details.Terms.Amount = s
 				}
+				if cap, ok := terms["cap"].(float64); ok {
+
+					e.Details.Terms.Cap = int64(cap)
+				}
+			} else {
+				e.Details.TermsEnabled = false
 			}
 			allEntries = append(allEntries, e)
 
