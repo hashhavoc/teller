@@ -69,11 +69,13 @@ func (c *APIClient) GetAllRunes() ([]Entry, error) {
 			e.Details.Etching = details["etching"].(string)
 			e.Details.Mints = int64(details["mints"].(float64))
 			e.Details.Number = int64(details["number"].(float64))
-			e.Details.Premine = int64(details["premine"].(float64))
+			e.Details.Premine = float64(details["premine"].(float64))
 			e.Details.SpacedRune = details["spaced_rune"].(string)
 			if terms, ok := details["terms"].(map[string]interface{}); ok {
+				//print out the type of the terms["amount"]
 				if amount, ok := terms["amount"].(float64); ok {
-					e.Details.Terms.Amount = int64(amount)
+					e.Details.Terms.Amount = amount
+					// e.Details.Terms.AmountStr = amount.String()
 				}
 			}
 			allEntries = append(allEntries, e)

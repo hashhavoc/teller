@@ -1,7 +1,10 @@
 package runes
 
 import (
+	"errors"
 	"fmt"
+	"math"
+	"math/big"
 
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
@@ -22,7 +25,7 @@ func CreateRunesCommand(props *props.AppProps) *cli.Command {
 			}
 			dataRows := generateTableData(resp)
 
-			headers := []string{"Name", "Symbol", "Amount", "Mints", "Premine", "Total Supply", "Premine Percent"}
+			headers := []string{"Name", "Divisibility", "Amount", "Mints", "Premine", "Total Supply", "Premine %"}
 
 			t := common.CreateTable(headers, dataRows)
 
@@ -30,7 +33,7 @@ func CreateRunesCommand(props *props.AppProps) *cli.Command {
 			vpTop.SetContent(fmt.Sprintf("Total: %s", fmt.Sprint(len(dataRows))))
 
 			vpBottom := viewport.New(75, 1)
-			vpBottom.SetContent("Press 'c' to copy address, 'a' to export all addresses, 'h' to view holders")
+			vpBottom.SetContent("Press 'c' to copy name, 'a' to export all runes")
 
 			m := tableModel{
 				table:          t,
@@ -51,20 +54,50 @@ func CreateRunesCommand(props *props.AppProps) *cli.Command {
 func generateTableData(pairs []ord.Entry) []common.TableData {
 	var dataRows []common.TableData
 	for _, d := range pairs {
-		// premine := d.Details.Premine /d.Details.
-		totalSupply := d.Details.Premine + (d.Details.Mints * d.Details.Terms.Amount)
-		preminePercent := float64(d.Details.Premine) / float64(totalSupply)
+		amount, _ := calculateQuotient(d.Details.Terms.Amount, d.Details.Divisibility)
+		premine, _ := calculateQuotient(d.Details.Premine, d.Details.Divisibility)
+		totalSupply := premine + (d.Details.Mints * amount)
+		preminePercent := float64(premine) / float64(totalSupply)
 		preminePercent = preminePercent * 100
+		if math.IsNaN(preminePercent) {
+			preminePercent = 0
+		}
 		row := common.TableData{
 			d.Details.SpacedRune,
-			d.Details.Symbol,
-			fmt.Sprintf("%d", d.Details.Terms.Amount),
+			fmt.Sprintf("%d", d.Details.Divisibility),
+			fmt.Sprintf("%d", amount),
 			fmt.Sprintf("%d", d.Details.Mints),
-			fmt.Sprintf("%d", d.Details.Premine),
+			fmt.Sprintf("%d", premine),
 			fmt.Sprintf("%d", totalSupply),
-			fmt.Sprintf("%f", preminePercent),
+			fmt.Sprintf("%.0f", preminePercent),
 		}
 		dataRows = append(dataRows, row)
 	}
 	return dataRows
+}
+
+func calculateQuotient(originalNumStr float64, divisibilityNum int64) (int64, error) {
+	s := fmt.Sprintf("%.0f", originalNumStr)
+	originalNum, ok := new(big.Int).SetString(s, 10)
+	if !ok {
+		return 5, fmt.Errorf("failed to convert original number %s", s)
+	}
+	divisibilityNumBig := big.NewInt(divisibilityNum)
+
+	if divisibilityNum == 0 {
+		if originalNum.IsInt64() {
+			return originalNum.Int64(), nil
+		} else {
+			return 0, errors.New("divisibility number cannot be zero")
+		}
+	}
+
+	quotient := new(big.Int)
+	response := quotient.Div(originalNum, divisibilityNumBig)
+
+	if response.IsInt64() {
+		return quotient.Int64(), nil
+	} else {
+		return 0, fmt.Errorf("quotient is out of int64 range")
+	}
 }
