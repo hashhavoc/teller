@@ -54,11 +54,12 @@ VERSION:
    v0.0.1
 
 COMMANDS:
-   contracts  Provides interactions with contracts
-   token      Provides interactions with tokens
-   wallet     Provides interactions with wallets
-   dex        Provides interactions with multiple dex
-   help, h    Shows a list of commands or help for one command
+   contracts      Provides interactions with contracts
+   token          Provides interactions with tokens
+   wallet         Provides interactions with wallets
+   dex            Provides interactions with multiple dex
+   transactions   Provides interactions with transactions
+   help, h        Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h     show help
@@ -73,6 +74,7 @@ Teller offers the following commands:
 - **token**: Provides interactions with tokens.
 - **wallet**: Provides interactions with wallets.
 - **dex**: Provides interactions with multiple decentralized exchanges.
+- **transactions**: Provides interactions with transactions.
 - **help**: Shows a list of commands or help for one command.
 
 ## Support
