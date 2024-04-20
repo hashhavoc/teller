@@ -19,6 +19,7 @@ type Config struct {
 
 type ConfigEndpoints struct {
 	Hiro     string `yaml:"hiro"`
+	Ord      string `yaml:"ord"`
 	Alex     string `yaml:"alex"`
 	StxTools string `yaml:"stxtools"`
 }

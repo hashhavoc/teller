@@ -8,6 +8,7 @@ import (
 	"github.com/hashhavoc/teller/internal/commands/contract"
 	"github.com/hashhavoc/teller/internal/commands/dex"
 	"github.com/hashhavoc/teller/internal/commands/initialize"
+	"github.com/hashhavoc/teller/internal/commands/ordinals"
 	"github.com/hashhavoc/teller/internal/commands/props"
 	"github.com/hashhavoc/teller/internal/commands/token"
 	"github.com/hashhavoc/teller/internal/commands/transactions"
@@ -15,6 +16,7 @@ import (
 	"github.com/hashhavoc/teller/internal/config"
 	"github.com/hashhavoc/teller/pkg/api/alex"
 	"github.com/hashhavoc/teller/pkg/api/hiro"
+	"github.com/hashhavoc/teller/pkg/api/ord"
 	"github.com/hashhavoc/teller/pkg/api/stxtools"
 	"github.com/phuslu/log"
 
@@ -37,10 +39,12 @@ func CreateApp(glog log.Logger) *cli.App {
 	hiroClient := hiro.NewAPIClient(config.Endpoints.Hiro)
 	alexClient := alex.NewAPIClient(config.Endpoints.Alex)
 	stxtoolsClient := stxtools.NewAPIClient(config.Endpoints.StxTools)
+	ordClient := ord.NewAPIClient(config.Endpoints.Ord)
 	props := &props.AppProps{
 		HeroClient:     hiroClient,
 		AlexClient:     alexClient,
 		StxToolsClient: stxtoolsClient,
+		OrdClient:      ordClient,
 		Config:         config,
 		Logger:         glog,
 	}
@@ -58,6 +62,7 @@ func CreateApp(glog log.Logger) *cli.App {
 			wallet.CreateWalletCommand(props),
 			dex.CreateDexCommand(props),
 			transactions.CreateTransactionsCommand(props),
+			ordinals.CreateOrdinalsCommand(props),
 		},
 	}
 	return app
