@@ -22,7 +22,7 @@ func CreateRunesCommand(props *props.AppProps) *cli.Command {
 			}
 			dataRows := generateTableData(resp)
 
-			headers := []string{"Name", "Divisibility", "Amount", "Mints", "Premine", "Total Supply", "Cap", "Premine %", "Block", "Terms"}
+			headers := []string{"Name", "Mints", "Premine", "Total Supply", "Cap", "Premine %", "Block", "Terms"}
 
 			t := common.CreateTable(headers, dataRows)
 
@@ -57,15 +57,12 @@ func generateTableData(pairs []ord.Entry) []common.TableData {
 		totalSupply := (d.Details.Premine + remaining + (d.Details.Mints * d.Details.Terms.Amount))
 
 		if totalSupply != 0 {
-			fmt.Print(float64(d.Details.Premine) / float64(totalSupply))
 			preminePercent = float64(d.Details.Premine) / float64(totalSupply) * 100
 		} else {
 			preminePercent = 0 * 100
 		}
 		row := common.TableData{
 			d.Details.SpacedRune,
-			fmt.Sprintf("%d", d.Details.Divisibility),
-			fmt.Sprintf("%d", d.Details.Terms.Amount),
 			fmt.Sprintf("%d", d.Details.Mints),
 			fmt.Sprintf("%d", d.Details.Premine),
 			fmt.Sprintf("%d", totalSupply),
