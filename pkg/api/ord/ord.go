@@ -64,7 +64,6 @@ func (c *APIClient) GetAllRunes() ([]Entry, error) {
 			details, ok := entry[1].(map[string]interface{})
 			if !ok {
 				return nil, errors.New("failed to convert entry details")
-
 			}
 			e.Details.Block = int64(details["block"].(float64))
 			e.Details.Burned = int64(details["burned"].(float64))
@@ -92,14 +91,12 @@ func (c *APIClient) GetAllRunes() ([]Entry, error) {
 					e.Details.Terms.Amount = s
 				}
 				if cap, ok := terms["cap"].(float64); ok {
-
 					e.Details.Terms.Cap = int64(cap)
 				}
 			} else {
 				e.Details.TermsEnabled = false
 			}
 			allEntries = append(allEntries, e)
-
 		}
 
 		if !response.More {
@@ -109,4 +106,38 @@ func (c *APIClient) GetAllRunes() ([]Entry, error) {
 		offset += 1
 	}
 	return allEntries, nil
+}
+
+func (c *APIClient) GetBalances() (RuneBalanceRespone, error) {
+	url := fmt.Sprintf("%s/runes/balances", c.BaseURL)
+
+	req, err := http.NewRequest("GET", url, nil)
+
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Accept", "application/json")
+
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf("failed to get balances: %s", res.Status)
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var response RuneBalanceRespone
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }

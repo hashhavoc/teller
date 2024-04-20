@@ -1,9 +1,12 @@
 package ord
 
+type RuneBalanceRespone map[string]map[string]float64
+
 // Define the structs according to the JSON structure
 type Entry struct {
-	ID      string  `json:"id"`
-	Details Details `json:"details"`
+	ID       string  `json:"id"`
+	Details  Details `json:"details"`
+	Mintable bool    `json:"mintable"`
 }
 
 type Details struct {
