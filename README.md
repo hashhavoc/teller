@@ -10,7 +10,17 @@ Homebrew is the recommended way to install Teller:
 brew install hashhavoc/tap/teller
 ```
 
-## Building From Source
+## Source
+
+### Dependencies
+
+You will need to install some packages on linux to handle the build process:
+
+```sh
+sudo apt-get install libx11-dev
+```
+
+### Building
 
 To use Teller, follow these simple steps:
 
