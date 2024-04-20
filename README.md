@@ -10,6 +10,16 @@ Homebrew is the recommended way to install Teller:
 brew install hashhavoc/tap/teller
 ```
 
+## Configuration
+
+There is a configuration file that contains various configuration values. You can find an example at `config/config.yaml.example`.
+
+```sh
+teller init
+```
+
+This will create a new configuration file at `~/.teller.yaml` with the default values. You can then edit this file to your liking. There is not currently a way to specify the configuration file location. Not all of the endpoints are avaliable publicly, so you may need to specify your own endpoints.
+
 ## Source
 
 ### Dependencies
