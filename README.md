@@ -10,7 +10,17 @@ Homebrew is the recommended way to install Teller:
 brew install hashhavoc/tap/teller
 ```
 
-## Building From Source
+## Source
+
+### Dependencies
+
+You will need to install some packages on linux to handle the build process: This is needed for the clipboard functionality.
+
+```sh
+sudo apt-get install libx11-dev
+```
+
+### Building
 
 To use Teller, follow these simple steps:
 
@@ -29,7 +39,7 @@ To use Teller, follow these simple steps:
 3. Build the executable:
 
     ```sh
-    go build -o teller
+    go build -o teller cmd/teller/main.go
     ```
 
 4. Run Teller:
@@ -54,11 +64,13 @@ VERSION:
    v0.0.1
 
 COMMANDS:
+   init           Creates a new configuration file
    contracts      Provides interactions with contracts
    token          Provides interactions with tokens
    wallet         Provides interactions with wallets
    dex            Provides interactions with multiple dex
    transactions   Provides interactions with transactions
+   ordinals, ord  Provides interactions with ordinals
    help, h        Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -75,6 +87,7 @@ Teller offers the following commands:
 - **wallet**: Provides interactions with wallets.
 - **dex**: Provides interactions with multiple decentralized exchanges.
 - **transactions**: Provides interactions with transactions.
+- **ordinals**: Provides interactions with ordinals on bitcoin.
 - **help**: Shows a list of commands or help for one command.
 
 ## Support
