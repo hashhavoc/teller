@@ -123,3 +123,4 @@ main
 config.yaml
 *.clar
 *.csv
+teller
