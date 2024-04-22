@@ -9,7 +9,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.10.0
 	github.com/hashhavoccat/stacks-go v0.0.0-20240404042855-623fe7696f55
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
-	github.com/phuslu/log v1.0.89
+	github.com/phuslu/log v1.0.90
 	github.com/pkg/errors v0.9.1
 	github.com/urfave/cli/v2 v2.27.1
 	golang.design/x/clipboard v0.7.0
