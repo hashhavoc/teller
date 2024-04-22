@@ -7,12 +7,7 @@ before:
 
 builds:
   - env:
-      - >-
-        {{- if eq .Os "darwin" }}
-          CGO_ENABLED=1
-        {{ else }}
-          CGO_ENABLED=0
-        {{- end }}
+      - CGO_ENABLED=0
     main: ./cmd/teller
     goos:
       - linux
@@ -22,6 +17,10 @@ builds:
       - amd64
       - arm64
     binary: teller
+    overrides:
+      - goos: darwin
+        env:
+          - CGO_ENABLED=1
 
 archives:
   - format: tar.gz
