@@ -13,6 +13,7 @@ builds:
         {{ else }}
           CGO_ENABLED=0
         {{- end }}
+    main: ./cmd/teller
     goos:
       - linux
       - windows
@@ -21,6 +22,7 @@ builds:
       - amd64
       - arm64
     binary: teller
+
 archives:
   - format: tar.gz
     name_template: "{{ .ProjectName }}_{{ .Tag }}_{{- .Os }}_{{- .Arch }}"
