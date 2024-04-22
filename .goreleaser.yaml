@@ -7,8 +7,12 @@ before:
 
 builds:
   - env:
-      - CGO_ENABLED=0
-    main: ./cmd/teller
+      - >-
+        {{- if eq .Os "darwin" }}
+          CGO_ENABLED=1
+        {{ else }}
+          CGO_ENABLED=0
+        {{- end }}
     goos:
       - linux
       - windows
@@ -17,7 +21,6 @@ builds:
       - amd64
       - arm64
     binary: teller
-
 archives:
   - format: tar.gz
     name_template: "{{ .ProjectName }}_{{ .Tag }}_{{- .Os }}_{{- .Arch }}"

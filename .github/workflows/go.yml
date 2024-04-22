@@ -12,6 +12,11 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     steps:
+      - name: Install and run dependencies (xvfb libx11-dev)
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          sudo apt update
+          sudo apt install -y libx11-dev
       - name: Checkout
         uses: actions/checkout@v4
         with:
