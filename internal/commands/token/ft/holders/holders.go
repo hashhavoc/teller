@@ -44,7 +44,7 @@ func CreateFungibleTokenHoldersCommand(props *props.AppProps) *cli.Command {
 			vpTop.SetContent(fmt.Sprintf("Total: %s", fmt.Sprint(len(dataRows))))
 
 			vpBottom := viewport.New(75, 1)
-			vpBottom.SetContent("Press 'c' to copy address, 'a' to export all addresses")
+			vpBottom.SetContent("Press 'a' to export all addresses")
 
 			m := tableModel{
 				table:          t,

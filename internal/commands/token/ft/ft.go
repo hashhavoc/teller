@@ -31,7 +31,7 @@ func CreateFungibleTokensCommand(props *props.AppProps) *cli.Command {
 			vpTop.SetContent(fmt.Sprintf("Total: %s", fmt.Sprint(len(dataRows))))
 
 			vpBottom := viewport.New(75, 1)
-			vpBottom.SetContent("Press 'c' to copy address, 'a' to export all addresses, 'h' to view holders")
+			vpBottom.SetContent("Press 'a' to export all addresses, 'h' to view holders")
 
 			m := tableModel{
 				table:          t,
