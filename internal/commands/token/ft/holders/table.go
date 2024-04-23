@@ -16,7 +16,6 @@ import (
 	"github.com/hashhavoc/teller/internal/common"
 	"github.com/hashhavoc/teller/pkg/api/hiro"
 	"github.com/hashhavoc/teller/pkg/utils"
-	"golang.design/x/clipboard"
 )
 
 type tableModel struct {
@@ -65,17 +64,8 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "q":
 				m.holdersView = false
 				m.viewportTop.SetContent(fmt.Sprintf("Total: %s", fmt.Sprint(len(m.table.Rows()))))
-				m.viewportBottom.SetContent("Press 'c' to copy address, 'a' to export all addresses, 'h' to view holders")
+				m.viewportBottom.SetContent("Press 'a' to export all addresses, 'h' to view holders")
 				return m, nil
-			case "c":
-				selectedRow := m.holdersTable.SelectedRow()
-				err := clipboard.Init()
-				if err != nil {
-					m.viewportBottom.SetContent("Error initializing clipboard")
-					return m, nil
-				}
-				clipboard.Write(clipboard.FmtText, []byte(selectedRow[0]))
-				m.viewportBottom.SetContent("Addres copied to clipboard")
 			case "a":
 				filename := fmt.Sprintf("%s-holders.csv", m.selected[4])
 				err := common.WriteRowsToCSV(m.holdersTable.Rows(), filename)
@@ -178,15 +168,6 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, nil
 				}
 				m.viewportBottom.SetContent(fmt.Sprintf("Contract source saved to %s", filename))
-			case "c":
-				selectedRow := m.table.SelectedRow()
-				err := clipboard.Init()
-				if err != nil {
-					m.viewportBottom.SetContent("Error initializing clipboard")
-					return m, nil
-				}
-				clipboard.Write(clipboard.FmtText, []byte(selectedRow[4]))
-				m.viewportBottom.SetContent("Contract ID copied to clipboard")
 			}
 		}
 	}

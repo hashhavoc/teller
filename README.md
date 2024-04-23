@@ -22,14 +22,6 @@ This will create a new configuration file at `~/.teller.yaml` with the default v
 
 ## Source
 
-### Dependencies
-
-You will need to install some packages on linux to handle the build process: This is needed for the clipboard functionality.
-
-```sh
-sudo apt-get install libx11-dev
-```
-
 ### Building
 
 To use Teller, follow these simple steps:

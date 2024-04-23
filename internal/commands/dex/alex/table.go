@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/phuslu/log"
-	"golang.design/x/clipboard"
 
 	"github.com/charmbracelet/bubbles/table"
 	"github.com/charmbracelet/bubbles/viewport"
@@ -66,17 +65,8 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "q":
 				m.holdersView = false
 				m.viewportTop.SetContent(fmt.Sprintf("Total: %s", fmt.Sprint(len(m.table.Rows()))))
-				m.viewportBottom.SetContent("Press 'c' to copy address, 'a' to export all addresses, 'h' to view holders")
+				m.viewportBottom.SetContent("Press 'a' to export all addresses, 'h' to view holders")
 				return m, nil
-			case "c":
-				selectedRow := m.holdersTable.SelectedRow()
-				err := clipboard.Init()
-				if err != nil {
-					m.viewportBottom.SetContent("Error initializing clipboard")
-					return m, nil
-				}
-				clipboard.Write(clipboard.FmtText, []byte(selectedRow[0]))
-				m.viewportBottom.SetContent("Addres copied to clipboard")
 			case "a":
 				filename := fmt.Sprintf("%s-holders.csv", m.selected[4])
 				err := common.WriteRowsToCSV(m.holdersTable.Rows(), filename)
@@ -152,7 +142,7 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.holdersView = true
 				m.holdersTable.SetHeight(m.windowHeight - common.TableHeightPadding)
 				m.viewportTop.SetContent(fmt.Sprintf("Total: %s", fmt.Sprint(len(dataRows))))
-				m.viewportBottom.SetContent("Press 'c' to copy address, 'a' to export all addresses")
+				m.viewportBottom.SetContent("Press 'a' to export all addresses")
 
 			case "a":
 				err := common.WriteRowsToCSV(m.table.Rows(), "alex-tokens.csv")
@@ -190,15 +180,6 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, nil
 				}
 				m.viewportBottom.SetContent(fmt.Sprintf("Contract source saved to %s", filename))
-			case "c":
-				selectedRow := m.table.SelectedRow()
-				err := clipboard.Init()
-				if err != nil {
-					m.viewportBottom.SetContent("Error initializing clipboard")
-					return m, nil
-				}
-				clipboard.Write(clipboard.FmtText, []byte(selectedRow[4]))
-				m.viewportBottom.SetContent("Contract ID copied to clipboard")
 			case "1", "2", "3", "4", "5", "6", "7", "8", "9":
 				columnIndex := int(msg.Runes[0] - '1') // Convert rune to int and adjust for 0-based indexing
 				currentRows := m.table.Rows()
