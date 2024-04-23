@@ -11,8 +11,10 @@ permissions:
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/goreleaser/goreleaser-cross:v1.21.5
     steps:
-      - name: Install and run dependencies (xvfb libx11-dev)
+      - name: Install and run dependencies (libx11-dev)
         if: ${{ runner.os == 'Linux' }}
         run: |
           sudo apt update
@@ -28,7 +30,9 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --clean
+          install-only: true
+      - name: Run GoReleaser
+        run: goreleaser release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}

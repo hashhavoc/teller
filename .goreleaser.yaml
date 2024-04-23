@@ -19,19 +19,18 @@ builds:
     binary: teller
     overrides:
       - goos: darwin
-        goarch: arm64
-        goamd64: ""
-        goarm: ""
-        gomips: ""
-        env:
-          - CGO_ENABLED=1
-      - goos: darwin
         goarch: amd64
         goamd64: v1
-        goarm: ""
-        gomips: ""
         env:
           - CGO_ENABLED=1
+          - CC=o64-clang
+          - CXX=o64-clang++
+      - goos: darwin
+        goarch: arm64
+        env:
+          - CGO_ENABLED=1
+          - CC=oa64-clang
+          - CXX=oa64-clang++
 archives:
   - format: tar.gz
     name_template: "{{ .ProjectName }}_{{ .Tag }}_{{- .Os }}_{{- .Arch }}"
