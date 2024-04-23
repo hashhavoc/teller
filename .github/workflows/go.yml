@@ -12,7 +12,8 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/goreleaser/goreleaser-cross:v1.21.5
+      image: ghcr.io/goreleaser/goreleaser-cross:v1.22.2
+      options: --user 1001
     steps:
       - name: Install and run dependencies (libx11-dev)
         if: ${{ runner.os == 'Linux' }}
