@@ -1,9 +1,9 @@
 name: goreleaser
 
 on:
-  push:
-    tags:
-      - "*"
+  push
+  # tags:
+  #   - "*"
 
 permissions:
   contents: write
@@ -12,25 +12,27 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/goreleaser/goreleaser-cross:v1.21.5
+      image: ghcr.io/goreleaser/goreleaser-cross:v1.22.2
     steps:
       - name: Install and run dependencies (libx11-dev)
         if: ${{ runner.os == 'Linux' }}
         run: |
           apt update
           apt install -y libx11-dev
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Go
-        uses: actions/setup-go@v4
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
           distribution: goreleaser
           version: latest
           install-only: true
+      - name: Set up Go
+        uses: actions/setup-go@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update Config
+        run: git config --global --add safe.directory /__w/teller/teller
       - name: Run GoReleaser
         run: goreleaser release --clean
         env:
