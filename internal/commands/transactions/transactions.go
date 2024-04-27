@@ -4,9 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
+
+	"github.com/charmbracelet/bubbles/table"
+	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/hashhavoc/teller/internal/commands/props"
+	"github.com/hashhavoc/teller/internal/common"
+	"github.com/hashhavoc/teller/pkg/api/hiro"
 	"github.com/urfave/cli/v2"
 )
 
@@ -16,6 +20,92 @@ func CreateTransactionsCommand(props *props.AppProps) *cli.Command {
 		Usage: "Provides interactions with transactions",
 		Subcommands: []*cli.Command{
 			createSyncCommand(props),
+			createViewCommand(props),
+		},
+	}
+}
+
+func createViewCommand(props *props.AppProps) *cli.Command {
+	return &cli.Command{
+		Name:  "view",
+		Usage: "View transactions for a given principal",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "principal",
+				Aliases:  []string{"p"},
+				Usage:    "Specify the principal",
+				Required: true,
+			},
+		},
+		Action: func(c *cli.Context) error {
+			var rows []table.Row
+
+			principal := c.String("principal")
+			allTxs, err := props.HeroClient.GetTransactions(principal)
+			if err != nil {
+				return err
+			}
+			// Prepare the table
+			// Prepare the table
+			headers := []table.Column{
+				{Title: "TxID", Width: len("0xce6a4bec9c1c3297e2a66cca212e3b29940b93066bedc4700931dea7e98c2d6a")},
+				{Title: "Sender", Width: len("SP12BBFBGPH73KSM65QBF872GR6A0PGYR789R3HZG")},
+				{Title: "Reciever", Width: len("SP12BBFBGPH73KSM65QBF872GR6A0PGYR789R3HZG")},
+				{Title: "Status", Width: len("Status")},
+				{Title: "Fee", Width: len("Fee")},
+				{Title: "STX Sent", Width: len("STX Sent")},
+				{Title: "STX Received", Width: len("STX Received")},
+				{Title: "FT", Width: len("FT")},
+				{Title: "NFT", Width: len("NFT")},
+				{Title: "STX", Width: len("STX")},
+			}
+
+			maxWidths := make([]int, len(headers))
+			for i, header := range headers {
+				maxWidths[i] = header.Width
+			}
+			for _, tx := range allTxs {
+				rows = append(rows, table.Row{
+					tx.Tx.TxID,
+					tx.Tx.SenderAddress,
+					tx.Tx.TokenTransfer.RecipientAddress,
+					tx.Tx.TxStatus,
+					common.InsertDecimal(tx.Tx.FeeRate, 6),
+					common.InsertDecimal(tx.Tx.TokenTransfer.Amount, 6),
+					common.InsertDecimal(tx.StxReceived, 6),
+					fmt.Sprint(tx.Events.Ft.Transfer),
+					fmt.Sprint(tx.Events.Nft.Transfer),
+					fmt.Sprint(tx.Events.Stx.Transfer),
+				})
+			}
+
+			for _, row := range rows {
+				for i, cell := range row {
+					cellStr := fmt.Sprint(cell)
+					if len(cellStr) > maxWidths[i] {
+						maxWidths[i] = len(cellStr)
+					}
+				}
+			}
+
+			for i, maxWidth := range maxWidths {
+				headers[i].Width = maxWidth
+			}
+
+			t := table.New(
+				table.WithColumns(headers),
+				table.WithRows(rows),
+				table.WithFocused(true),
+				table.WithStyles(common.TableStyles),
+			)
+
+			// Render the table
+			m := tableModel{table: t, client: props.HeroClient, logger: props.Logger}
+			if _, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
+				props.Logger.Fatal().Err(err).Msg("Failed to run program")
+			}
+			return nil
+
 		},
 	}
 }
@@ -39,7 +129,7 @@ func syncTransactions(props *props.AppProps, principal string) error {
 	filename := fmt.Sprintf("%s_transactions.json", principal)
 
 	// Load existing transactions from the file if it exists
-	var existingTxs []Transaction
+	var existingTxs []hiro.Transaction
 	if data, err := ioutil.ReadFile(filename); err == nil {
 		if err := json.Unmarshal(data, &existingTxs); err != nil {
 			return err
@@ -47,30 +137,10 @@ func syncTransactions(props *props.AppProps, principal string) error {
 	}
 
 	// Fetch transactions from the Hiro API until the total matches the local count
-	var allTxs []Transaction
-	offset := 0
-	limit := 50
-
-	for {
-		url := fmt.Sprintf("%s/extended/v1/address/%s/transactions?limit=%d&offset=%d", props.Config.Endpoints.Hiro, principal, limit, offset)
-		resp, err := http.Get(url)
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-
-		var txResp TransactionsResponse
-		if err := json.NewDecoder(resp.Body).Decode(&txResp); err != nil {
-			return err
-		}
-
-		allTxs = append(allTxs, txResp.Results...)
-
-		if len(allTxs) >= txResp.Total {
-			break
-		}
-
-		offset += limit
+	var allTxs []hiro.Transaction
+	allTxs, err := props.HeroClient.GetTransactions(principal)
+	if err != nil {
+		return err
 	}
 
 	// Merge fetched transactions with existing transactions
@@ -89,19 +159,19 @@ func syncTransactions(props *props.AppProps, principal string) error {
 	return nil
 }
 
-func mergeTxs(existingTxs, fetchedTxs []Transaction) []Transaction {
+func mergeTxs(existingTxs, fetchedTxs []hiro.Transaction) []hiro.Transaction {
 	txMap := make(map[string]bool)
 	for _, tx := range existingTxs {
-		txMap[tx.TxID] = true
+		txMap[tx.Tx.TxID] = true
 	}
 
-	var mergedTxs []Transaction
+	var mergedTxs []hiro.Transaction
 	mergedTxs = append(mergedTxs, existingTxs...)
 
 	for _, tx := range fetchedTxs {
-		if !txMap[tx.TxID] {
+		if !txMap[tx.Tx.TxID] {
 			mergedTxs = append(mergedTxs, tx)
-			txMap[tx.TxID] = true
+			txMap[tx.Tx.TxID] = true
 		}
 	}
 
