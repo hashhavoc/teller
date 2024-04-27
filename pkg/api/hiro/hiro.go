@@ -73,6 +73,52 @@ func (c *APIClient) GetAllTokens() ([]TokenResult, error) {
 	return allResults, nil
 }
 
+func (c *APIClient) GetTransactions(principal string) ([]Transaction, error) {
+	var allTxs []Transaction
+	offset := 0
+	limit := 30 // or any other limit you want to set
+
+	for {
+		url := fmt.Sprintf("%s/extended/v2/addresses/%s/transactions?offset=%d&limit=%d", c.BaseURL, principal, offset, limit)
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Add("Accept", "application/json")
+
+		res, err := c.Client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		defer res.Body.Close()
+
+		if res.StatusCode != 200 {
+			return nil, fmt.Errorf("failed to get contract source: %s", res.Status)
+		}
+
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var txResp TransactionsResponse
+		err = json.Unmarshal(body, &txResp)
+		if err != nil {
+			return nil, err
+		}
+
+		allTxs = append(allTxs, txResp.Results...)
+
+		if len(allTxs) >= txResp.Total {
+			break
+		}
+
+		offset += limit
+	}
+
+	return allTxs, nil
+}
+
 func (c *APIClient) GetContractDetails(contractID string) (ContractDetailsResponse, error) {
 	url := fmt.Sprintf("%s/extended/v1/contract/%s", c.BaseURL, contractID)
 	method := "GET"
