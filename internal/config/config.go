@@ -22,6 +22,7 @@ type ConfigEndpoints struct {
 	Ord      string `yaml:"ord"`
 	Alex     string `yaml:"alex"`
 	StxTools string `yaml:"stxtools"`
+	Bob      string `yaml:"bob"`
 }
 
 func NewConfig(path string) *Config {
