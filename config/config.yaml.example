@@ -1,10 +1,11 @@
 endpoints:
-  # mainnet is https://api.hiro.so/
-  # testnet is https://api.testnet.hiro.so/
+  # mainnet is https://api.hiro.so
+  # testnet is https://api.testnet.hiro.so
   hiro: https://api.hiro.so
   ord: http://localhost:8080
   alex: https://api.alexgo.io
   stxtools: https://api.stxtools.io
+  bob: https://explorer.gobob.xyz
 wallets:
   - SPZY2PR8WW2N3JSAWTFPJGTA7DW1AGFKCC0VHMVK
   - SP24478XYAB7DZF7850JWVYQRGGRKDWXF7WKKRY30

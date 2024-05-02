@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/hashhavoc/teller/internal/commands/bob"
 	"github.com/hashhavoc/teller/internal/commands/contract"
 	"github.com/hashhavoc/teller/internal/commands/dex"
 	"github.com/hashhavoc/teller/internal/commands/initialize"
@@ -15,6 +16,7 @@ import (
 	"github.com/hashhavoc/teller/internal/commands/wallet"
 	"github.com/hashhavoc/teller/internal/config"
 	"github.com/hashhavoc/teller/pkg/api/alex"
+	"github.com/hashhavoc/teller/pkg/api/gobob"
 	"github.com/hashhavoc/teller/pkg/api/hiro"
 	"github.com/hashhavoc/teller/pkg/api/ord"
 	"github.com/hashhavoc/teller/pkg/api/stxtools"
@@ -40,11 +42,13 @@ func CreateApp(glog log.Logger) *cli.App {
 	alexClient := alex.NewAPIClient(config.Endpoints.Alex)
 	stxtoolsClient := stxtools.NewAPIClient(config.Endpoints.StxTools)
 	ordClient := ord.NewAPIClient(config.Endpoints.Ord)
+	gobobClient := gobob.NewAPIClient(config.Endpoints.Bob)
 	props := &props.AppProps{
 		HeroClient:     hiroClient,
 		AlexClient:     alexClient,
 		StxToolsClient: stxtoolsClient,
 		OrdClient:      ordClient,
+		BobClient:      gobobClient,
 		Config:         config,
 		Logger:         glog,
 	}
@@ -57,6 +61,7 @@ func CreateApp(glog log.Logger) *cli.App {
 		Suggest:              true,
 		Commands: []*cli.Command{
 			initialize.CreateInitCommand(props),
+			bob.CreateBobCommand(props),
 			contract.CreateContractsCommand(props),
 			token.CreateTokenCommand(props),
 			wallet.CreateWalletCommand(props),
