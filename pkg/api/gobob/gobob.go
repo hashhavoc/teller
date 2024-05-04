@@ -36,7 +36,6 @@ func (c *APIClient) GetAllTokens() ([]TokenItems, error) {
 			url = fmt.Sprintf("%s/api/v2/tokens?%s", c.BaseURL, v.Encode())
 		}
 
-		fmt.Println(url)
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			return nil, err
@@ -50,7 +49,7 @@ func (c *APIClient) GetAllTokens() ([]TokenItems, error) {
 		defer res.Body.Close()
 
 		if res.StatusCode != 200 {
-			return nil, fmt.Errorf("failed to get contract source: %s", res.Status)
+			return nil, fmt.Errorf("failed to get all tokens: %s", res.Status)
 		}
 
 		body, err := io.ReadAll(res.Body)
@@ -67,6 +66,56 @@ func (c *APIClient) GetAllTokens() ([]TokenItems, error) {
 		params = response.NextPageParams
 
 		if response.NextPageParams == (NextPageParams{}) {
+			break
+		}
+	}
+
+	return allResults, nil
+}
+
+func (c *APIClient) GetTokenHolders(contractId string) ([]TokenHolderItem, error) {
+	var allResults []TokenHolderItem
+	var params TokenHoldersNextPageParams
+
+	for {
+		var url string
+		if params == (TokenHoldersNextPageParams{}) {
+			url = fmt.Sprintf("%s/api/v2/tokens/%s/holders", c.BaseURL, contractId)
+		} else {
+			v, _ := query.Values(params)
+			url = fmt.Sprintf("%s/api/v2/tokens/%s/holders?%s", c.BaseURL, contractId, v.Encode())
+		}
+
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Add("Accept", "application/json")
+
+		res, err := c.Client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		defer res.Body.Close()
+
+		if res.StatusCode != 200 {
+			return nil, fmt.Errorf("failed to get token holders: %s", res.Status)
+		}
+
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var response TokenHoldersResponse
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			return nil, err
+		}
+		allResults = append(allResults, response.Items...)
+		params = response.NextPageParams
+
+		if response.NextPageParams == (TokenHoldersNextPageParams{}) {
 			break
 		}
 	}

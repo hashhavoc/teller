@@ -2,10 +2,8 @@ package ft
 
 import (
 	"fmt"
-	"os"
 	"sort"
 	"strconv"
-	"strings"
 
 	"github.com/phuslu/log"
 
@@ -14,7 +12,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/hashhavoc/teller/internal/common"
-	"github.com/hashhavoc/teller/pkg/api/hiro"
+	"github.com/hashhavoc/teller/pkg/api/gobob"
 	"github.com/hashhavoc/teller/pkg/utils"
 )
 
@@ -25,7 +23,7 @@ type tableModel struct {
 	viewportTop    viewport.Model
 	selected       table.Row
 
-	client *hiro.APIClient
+	client *gobob.APIClient
 	logger log.Logger
 
 	windowHeight int
@@ -129,7 +127,7 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				utils.OpenBrowser("https://explorer.gobob.xyz/token/" + selectedRow[4])
 			case "h":
 				m.selected = m.table.SelectedRow()
-				holders, err := m.client.GetTokenHolders(m.selected[4], 0)
+				holders, err := m.client.GetTokenHolders(m.selected[4])
 				if err != nil {
 					m.logger.Error().Err(err).Msg("Failed to get contract details")
 					return m, nil
@@ -156,36 +154,36 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, nil
 				}
 				m.logger.Info().Msg("Table dumped to tokens.csv")
-			case "s":
-				selectedRow := m.table.SelectedRow()
-				contract, err := m.client.GetContractSource(selectedRow[4])
-				if err != nil {
-					m.logger.Error().Err(err).Msg("Failed to get contract source")
-					return m, nil
-				}
+				// case "s":
+				// 	selectedRow := m.table.SelectedRow()
+				// 	contract, err := m.client.GetContractSource(selectedRow[4])
+				// 	if err != nil {
+				// 		m.logger.Error().Err(err).Msg("Failed to get contract source")
+				// 		return m, nil
+				// 	}
 
-				var builder strings.Builder
-				builder.WriteString(selectedRow[0])
-				builder.WriteString("-")
-				builder.WriteString(selectedRow[1])
-				builder.WriteString("-")
-				builder.WriteString(selectedRow[4])
-				builder.WriteString(".clar")
-				filename := builder.String()
+				// 	var builder strings.Builder
+				// 	builder.WriteString(selectedRow[0])
+				// 	builder.WriteString("-")
+				// 	builder.WriteString(selectedRow[1])
+				// 	builder.WriteString("-")
+				// 	builder.WriteString(selectedRow[4])
+				// 	builder.WriteString(".clar")
+				// 	filename := builder.String()
 
-				file, err := os.Create(filename)
-				if err != nil {
-					m.logger.Error().Err(err).Msg("Failed to create file")
-					return m, nil
-				}
-				defer file.Close()
+				// 	file, err := os.Create(filename)
+				// 	if err != nil {
+				// 		m.logger.Error().Err(err).Msg("Failed to create file")
+				// 		return m, nil
+				// 	}
+				// 	defer file.Close()
 
-				_, err = file.WriteString(contract)
-				if err != nil {
-					m.logger.Error().Err(err).Msg("Failed to write to file")
-					return m, nil
-				}
-				m.viewportBottom.SetContent(fmt.Sprintf("Contract source saved to %s", filename))
+				// 	_, err = file.WriteString(contract)
+				// 	if err != nil {
+				// 		m.logger.Error().Err(err).Msg("Failed to write to file")
+				// 		return m, nil
+				// 	}
+				// 	m.viewportBottom.SetContent(fmt.Sprintf("Contract source saved to %s", filename))
 			}
 		}
 	}
@@ -209,12 +207,12 @@ func (m tableModel) View() string {
 		m.viewportBottom.View())
 }
 
-func generateHolderTableData(holders hiro.ContractHoldersResponse, i int) []common.TableData {
+func generateHolderTableData(holders []gobob.TokenHolderItem, i int) []common.TableData {
 	var dataRows []common.TableData
-	for k, d := range holders {
-		strData := common.InsertDecimal(d, i)
+	for _, d := range holders {
+		strData := common.InsertDecimal(d.Value, i)
 		row := common.TableData{
-			k,
+			d.Address.Hash,
 			strData,
 		}
 		dataRows = append(dataRows, row)

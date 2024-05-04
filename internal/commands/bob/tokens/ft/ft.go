@@ -37,7 +37,7 @@ func CreateFungibleTokensCommand(props *props.AppProps) *cli.Command {
 				table:          t,
 				viewportBottom: vpBottom,
 				viewportTop:    vpTop,
-				client:         props.HeroClient,
+				client:         props.BobClient,
 				logger:         props.Logger,
 			}
 
