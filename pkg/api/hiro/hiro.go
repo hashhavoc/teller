@@ -75,47 +75,76 @@ func (c *APIClient) GetAllTokens() ([]TokenResult, error) {
 
 func (c *APIClient) GetTransactions(principal string) ([]Transaction, error) {
 	var allTxs []Transaction
+	var total int
 	offset := 0
-	limit := 30 // or any other limit you want to set
+	limit := 50 // or any other limit you want to set
+	batchSize := 5
+	resultsChan := make(chan []Transaction)
+	errChan := make(chan error)
+	doneChan := make(chan bool)
 
-	for {
-		url := fmt.Sprintf("%s/extended/v2/addresses/%s/transactions?offset=%d&limit=%d", c.BaseURL, principal, offset, limit)
-		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			return nil, err
+	go func() {
+		for {
+			currentOffset := offset
+			for i := 0; i < batchSize; i++ {
+				go func(o int) {
+					url := fmt.Sprintf("%s/extended/v2/addresses/%s/transactions?offset=%d&limit=%d", c.BaseURL, principal, o, limit)
+					req, err := http.NewRequest("GET", url, nil)
+					if err != nil {
+						errChan <- err
+						return
+					}
+					req.Header.Add("Accept", "application/json")
+
+					res, err := c.Client.Do(req)
+					if err != nil {
+						errChan <- err
+						return
+					}
+					defer res.Body.Close()
+
+					if res.StatusCode != 200 {
+						errChan <- fmt.Errorf("failed to get transactions: %s", res.Status)
+						return
+					}
+
+					body, err := io.ReadAll(res.Body)
+					if err != nil {
+						errChan <- err
+						return
+					}
+
+					var txResp TransactionsResponse
+					err = json.Unmarshal(body, &txResp)
+					if err != nil {
+						errChan <- err
+						return
+					}
+					total = txResp.Total
+					resultsChan <- txResp.Results
+				}(currentOffset)
+				currentOffset += limit
+			}
+
+			for i := 0; i < batchSize; i++ {
+				select {
+				case err := <-errChan:
+					fmt.Println(err)
+					return
+				case results := <-resultsChan:
+					allTxs = append(allTxs, results...)
+				}
+			}
+
+			offset += limit * batchSize
+			if len(allTxs) >= total { // Assuming a fixed number to break the loop, adjust based on your needs
+				doneChan <- true
+				return
+			}
 		}
-		req.Header.Add("Accept", "application/json")
+	}()
 
-		res, err := c.Client.Do(req)
-		if err != nil {
-			return nil, err
-		}
-		defer res.Body.Close()
-
-		if res.StatusCode != 200 {
-			return nil, fmt.Errorf("failed to get contract source: %s", res.Status)
-		}
-
-		body, err := io.ReadAll(res.Body)
-		if err != nil {
-			return nil, err
-		}
-
-		var txResp TransactionsResponse
-		err = json.Unmarshal(body, &txResp)
-		if err != nil {
-			return nil, err
-		}
-
-		allTxs = append(allTxs, txResp.Results...)
-
-		if len(allTxs) >= txResp.Total {
-			break
-		}
-
-		offset += limit
-	}
-
+	<-doneChan
 	return allTxs, nil
 }
 
