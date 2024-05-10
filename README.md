@@ -10,6 +10,12 @@ Homebrew is the recommended way to install Teller:
 brew install hashhavoc/tap/teller
 ```
 
+## Upgrade
+
+```sh
+brew upgrade hashhavoc/tap/teller
+```
+
 ## Configuration
 
 There is a configuration file that contains various configuration values. You can find an example at `config/config.yaml.example`.
