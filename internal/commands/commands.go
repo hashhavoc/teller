@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/hashhavoc/teller/internal/commands/bob"
+	"github.com/hashhavoc/teller/internal/commands/conf"
 	"github.com/hashhavoc/teller/internal/commands/contract"
 	"github.com/hashhavoc/teller/internal/commands/dex"
-	"github.com/hashhavoc/teller/internal/commands/initialize"
 	"github.com/hashhavoc/teller/internal/commands/ordinals"
 	"github.com/hashhavoc/teller/internal/commands/props"
 	"github.com/hashhavoc/teller/internal/commands/token"
@@ -60,7 +60,7 @@ func CreateApp(glog log.Logger) *cli.App {
 		EnableBashCompletion: true,
 		Suggest:              true,
 		Commands: []*cli.Command{
-			initialize.CreateInitCommand(props),
+			conf.CreateConfigCommand(props),
 			bob.CreateBobCommand(props),
 			contract.CreateContractsCommand(props),
 			token.CreateTokenCommand(props),
