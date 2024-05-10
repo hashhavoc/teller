@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/hashhavoc/teller/pkg/api/alex"
+	"github.com/hashhavoc/teller/pkg/api/gobob"
 	"github.com/hashhavoc/teller/pkg/api/hiro"
 	"github.com/hashhavoc/teller/pkg/api/stxtools"
 
@@ -28,6 +29,12 @@ type ConfigEndpoints struct {
 func NewConfig(path string) *Config {
 	config := &Config{
 		Path: path,
+		Endpoints: ConfigEndpoints{
+			Hiro:     hiro.DefaultApiBase,
+			Alex:     alex.DefaultApiBase,
+			StxTools: stxtools.DefaultApiBase,
+			Bob:      gobob.DefaultApiBase,
+		},
 	}
 	return config
 }
@@ -39,17 +46,6 @@ func (c *Config) ReadConfig() error {
 	}
 	if err := yaml.Unmarshal(bytes, c); err != nil {
 		return err
-	}
-
-	// Set default values if configurations are not set
-	if c.Endpoints.Hiro == "" {
-		c.Endpoints.Hiro = hiro.DefaultApiBase
-	}
-	if c.Endpoints.Alex == "" {
-		c.Endpoints.Alex = alex.DefaultApiBase
-	}
-	if c.Endpoints.StxTools == "" {
-		c.Endpoints.StxTools = stxtools.DefaultApiBase
 	}
 
 	// Ensure wallets are unique
