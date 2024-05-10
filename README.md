@@ -15,7 +15,7 @@ brew install hashhavoc/tap/teller
 There is a configuration file that contains various configuration values. You can find an example at `config/config.yaml.example`.
 
 ```sh
-teller init
+teller conf init
 ```
 
 This will create a new configuration file at `~/.teller.yaml` with the default values. You can then edit this file to your liking. There is not currently a way to specify the configuration file location. Not all of the endpoints are avaliable publicly, so you may need to specify your own endpoints.
@@ -66,7 +66,8 @@ VERSION:
    v0.0.1
 
 COMMANDS:
-   init           Creates a new configuration file
+   config         Commands to manage the configuration file
+   bob            Provides interactions with bob chain
    contracts      Provides interactions with contracts
    token          Provides interactions with tokens
    wallet         Provides interactions with wallets

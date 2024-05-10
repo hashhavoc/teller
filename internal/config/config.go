@@ -64,15 +64,13 @@ func (c *Config) AddWallet(wallet string) error {
 	// Check for duplicate before adding
 	for _, w := range c.Wallets {
 		if w == wallet {
-			return fmt.Errorf("duplicate wallet: %s", wallet) // Return an error if a duplicate is found
+			return fmt.Errorf("duplicate wallet: %s", wallet)
 		}
 	}
 	// If not found, append the wallet
 	c.Wallets = append(c.Wallets, wallet)
-	return nil // Return nil if no error occurred
+	return nil
 }
-
-// need to remove
 
 func (c *Config) RemoveWallet(wallet string) {
 	for i, w := range c.Wallets {
