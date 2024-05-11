@@ -7,6 +7,8 @@ import (
 	"github.com/phuslu/log"
 )
 
+var Version = "development"
+
 func main() {
 	logLevelEnv := os.Getenv("TELLER_LOG_LEVEL")
 	logLevel := log.ErrorLevel
@@ -34,7 +36,7 @@ func main() {
 			EndWithMessage: true,
 		},
 	}
-	app := commands.CreateApp(glog)
+	app := commands.CreateApp(glog, Version)
 	err := app.Run(os.Args)
 	if err != nil {
 		glog.Fatal().Err(err).Msg("")

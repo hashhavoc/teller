@@ -25,7 +25,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func CreateApp(glog log.Logger) *cli.App {
+func CreateApp(glog log.Logger, version string) *cli.App {
 	dirname, err := os.UserHomeDir()
 	if err != nil {
 		glog.Fatal().Err(err).Msg("Failed to get user home directory")
@@ -55,7 +55,7 @@ func CreateApp(glog log.Logger) *cli.App {
 	app := &cli.App{
 		Name:                 "teller",
 		Compiled:             time.Now(),
-		Version:              "v0.0.1",
+		Version:              version,
 		Usage:                "interact with the stx blockchain",
 		EnableBashCompletion: true,
 		Suggest:              true,
