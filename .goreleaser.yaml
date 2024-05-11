@@ -17,6 +17,8 @@ builds:
       - amd64
       - arm64
     binary: teller
+    ldflags:
+      - "-X 'main.Version={{ .Tag }}'"
 
 archives:
   - format: tar.gz
