@@ -13,7 +13,8 @@ import (
 	"github.com/hashhavoc/teller/pkg/utils/uint128"
 )
 
-const DefaultApiBase = "https://api.hiro.so"
+// const DefaultApiBase = "https://api.hiro.so"
+const DefaultApiBase = "https://stacks.hashhavoc.com"
 
 type APIClient struct {
 	BaseURL string
