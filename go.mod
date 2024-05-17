@@ -10,7 +10,7 @@ require (
 	github.com/google/go-querystring v1.1.0
 	github.com/hashhavoccat/stacks-go v0.0.0-20240404042855-623fe7696f55
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
-	github.com/phuslu/log v1.0.97
+	github.com/phuslu/log v1.0.100
 	github.com/pkg/errors v0.9.1
 	github.com/urfave/cli/v2 v2.27.2
 	gopkg.in/yaml.v2 v2.4.0
