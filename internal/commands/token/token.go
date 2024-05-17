@@ -3,6 +3,7 @@ package token
 import (
 	"github.com/hashhavoc/teller/internal/commands/props"
 	"github.com/hashhavoc/teller/internal/commands/token/ft"
+	"github.com/hashhavoc/teller/internal/commands/token/ft/compare"
 	"github.com/hashhavoc/teller/internal/commands/token/ft/holders"
 	"github.com/hashhavoc/teller/internal/commands/token/nft"
 
@@ -17,6 +18,7 @@ func CreateTokenCommand(props *props.AppProps) *cli.Command {
 			nft.CreateNonFungibleTokensCommand(props),
 			ft.CreateFungibleTokensCommand(props),
 			holders.CreateFungibleTokenHoldersCommand(props),
+			compare.CreateFungibleTokenHoldersCompareCommand(props),
 		},
 	}
 }

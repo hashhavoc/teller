@@ -20,6 +20,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+var Zero Uint128
+
 // Uint128 is a big-endian 128 bit unsigned integer which wraps two uint64s.
 type Uint128 struct {
 	Hi, Lo uint64
@@ -95,24 +97,68 @@ func (u Uint128) Compare(o Uint128) int {
 	return 0
 }
 
-// Add returns a new Uint128 incremented by n.
-func (u Uint128) Add(n uint64) Uint128 {
-	lo := u.Lo + n
-	hi := u.Hi
-	if u.Lo > lo {
-		hi++
+// Add returns u+v.
+func (u Uint128) Add(v Uint128) Uint128 {
+	lo, carry := bits.Add64(u.Lo, v.Lo, 0)
+	hi, carry := bits.Add64(u.Hi, v.Hi, carry)
+	if carry != 0 {
+		panic("overflow")
 	}
-	return Uint128{hi, lo}
+	return Uint128{lo, hi}
 }
 
-// Sub returns a new Uint128 decremented by n.
-func (u Uint128) Sub(n uint64) Uint128 {
-	lo := u.Lo - n
-	hi := u.Hi
-	if u.Lo < lo {
-		hi--
+// From64 converts v to a Uint128 value.
+func From64(v uint64) Uint128 {
+	return New(v, 0)
+}
+
+// New returns the Uint128 value (lo,hi).
+func New(lo, hi uint64) Uint128 {
+	return Uint128{lo, hi}
+}
+
+// Equals64 returns true if u == v.
+func (u Uint128) Equals64(v uint64) bool {
+	return u.Lo == v && u.Hi == 0
+}
+
+// Cmp compares u and v and returns:
+//
+//	-1 if u <  v
+//	 0 if u == v
+//	+1 if u >  v
+func (u Uint128) Cmp(v Uint128) int {
+	if u == v {
+		return 0
+	} else if u.Hi < v.Hi || (u.Hi == v.Hi && u.Lo < v.Lo) {
+		return -1
+	} else {
+		return 1
 	}
-	return Uint128{hi, lo}
+}
+
+// Cmp64 compares u and v and returns:
+//
+//	-1 if u <  v
+//	 0 if u == v
+//	+1 if u >  v
+func (u Uint128) Cmp64(v uint64) int {
+	if u.Hi == 0 && u.Lo == v {
+		return 0
+	} else if u.Hi == 0 && u.Lo < v {
+		return -1
+	} else {
+		return 1
+	}
+}
+
+func (u Uint128) Sub(v Uint128) Uint128 {
+	lo, borrow := bits.Sub64(u.Lo, v.Lo, 0)
+	hi, borrow := bits.Sub64(u.Hi, v.Hi, borrow)
+	if borrow != 0 {
+		panic("underflow")
+	}
+	return Uint128{lo, hi}
 }
 
 // And returns a new Uint128 that is the bitwise AND of two Uint128 values.
