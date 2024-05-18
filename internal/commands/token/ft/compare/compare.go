@@ -49,7 +49,7 @@ func CreateFungibleTokenHoldersCompareCommand(props *props.AppProps) *cli.Comman
 
 			dataRows := generateTableData(firstResp, secondResp)
 
-			headers := []string{"Address", "Before", "After", "Difference"}
+			headers := []string{"Address", "First", "Second"}
 
 			t := common.CreateTable(headers, dataRows)
 
@@ -132,7 +132,6 @@ func generateTableData(firstResp hiro.ContractHoldersResponse, secondResp hiro.C
 			address,
 			data.Before.String(),
 			data.After.String(),
-			data.Difference.String(),
 		}
 
 		dataRows = append(dataRows, row)
