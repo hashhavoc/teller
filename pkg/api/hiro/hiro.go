@@ -298,8 +298,13 @@ func (c *APIClient) GetNFTHoldings(principal string) ([]NFTHoldingResponseResult
 	return response.Results, nil
 }
 
-func (c *APIClient) GetAccountBalance(principal string) (BalanceResponse, error) {
-	url := fmt.Sprintf("%s/extended/v1/address/%s/balances", c.BaseURL, principal)
+func (c *APIClient) GetAccountBalance(principal string, block int) (BalanceResponse, error) {
+	var url string
+	if block == 0 {
+		url = fmt.Sprintf("%s/extended/v1/address/%s/balances", c.BaseURL, principal)
+	} else {
+		url = fmt.Sprintf("%s/extended/v1/address/%s/balances?until_block=%d", c.BaseURL, principal, block)
+	}
 	method := "GET"
 
 	req, err := http.NewRequest(method, url, nil)

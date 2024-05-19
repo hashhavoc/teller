@@ -27,6 +27,7 @@ func CreateWalletCommand(props *props.AppProps) *cli.Command {
 			createAddWalletCommand(props),
 			createRemoveWalletCommand(props),
 			createGenerateWalletCommand(props),
+			createBalancesByAddressCommand(props),
 		},
 	}
 }
@@ -208,7 +209,7 @@ func createBalanceCommand(props *props.AppProps) *cli.Command {
 
 			address := c.String("principal")
 			fmt.Println("Fetching balance for address:", address)
-			resp, err := props.HeroClient.GetAccountBalance(address)
+			resp, err := props.HeroClient.GetAccountBalance(address, 0)
 			if err != nil {
 				return err
 			}
@@ -300,6 +301,14 @@ func createBalancesCommand(props *props.AppProps) *cli.Command {
 	return &cli.Command{
 		Name:  "balances",
 		Usage: "view balances",
+		Flags: []cli.Flag{
+			&cli.IntFlag{
+				Name:    "block",
+				Usage:   "Block height to query at",
+				Aliases: []string{"b"},
+				Value:   0,
+			},
+		},
 		Action: func(c *cli.Context) error {
 			var wallets []hiro.BalanceResponse
 			var stxBalance int64
@@ -310,7 +319,7 @@ func createBalancesCommand(props *props.AppProps) *cli.Command {
 
 			for _, w := range props.Config.Wallets {
 				fmt.Println("Wallet:", w)
-				resp, err := props.HeroClient.GetAccountBalance(w)
+				resp, err := props.HeroClient.GetAccountBalance(w, c.Int("block"))
 				if err != nil {
 					return err
 				}
@@ -368,6 +377,80 @@ func createBalancesCommand(props *props.AppProps) *cli.Command {
 			for k, count := range nonFungibleTokenCounts {
 				split := strings.Split(k, "::")
 				rows = append(rows, table.Row{split[1], "Non-Fungible", strconv.FormatInt(count, 10), split[0], ""})
+			}
+
+			for _, row := range rows {
+				for i, cell := range row {
+					cellStr := fmt.Sprint(cell)
+					if len(cellStr) > maxWidths[i] {
+						maxWidths[i] = len(cellStr)
+					}
+				}
+			}
+
+			for i, maxWidth := range maxWidths {
+				headers[i].Width = maxWidth
+			}
+
+			t := table.New(
+				table.WithColumns(headers),
+				table.WithRows(rows),
+				table.WithFocused(true),
+				table.WithStyles(common.TableStyles),
+			)
+
+			m := tableModel{table: t, client: props.HeroClient}
+			if _, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
+				props.Logger.Fatal().Err(err).Msg("Failed to run program")
+			}
+
+			return nil
+		},
+	}
+}
+
+func createBalancesByAddressCommand(props *props.AppProps) *cli.Command {
+	return &cli.Command{
+		Name:  "balancesbyadd",
+		Usage: "view balances",
+		Flags: []cli.Flag{
+			&cli.IntFlag{
+				Name:    "block",
+				Usage:   "Block height to query at",
+				Aliases: []string{"b"},
+				Value:   0,
+			},
+		},
+		Action: func(c *cli.Context) error {
+			var wallets []hiro.BalanceResponseByAddress
+			var rows []table.Row
+
+			for _, w := range props.Config.Wallets {
+				fmt.Println("Wallet:", w)
+				resp, err := props.HeroClient.GetAccountBalance(w, c.Int("block"))
+				if err != nil {
+					return err
+				}
+				walletBalance := hiro.BalanceResponseByAddress{
+					Address: w,
+					Resp:    resp,
+				}
+				wallets = append(wallets, walletBalance)
+			}
+
+			for _, w := range wallets {
+				x, _ := strconv.ParseInt(w.Resp.Stx.Balance, 10, 64)
+				rows = append(rows, table.Row{w.Address, fmt.Sprint(x)})
+			}
+
+			headers := []table.Column{
+				{Title: "Address", Width: len("Address")},
+				{Title: "Balance", Width: len("Balance")},
+			}
+
+			maxWidths := make([]int, len(headers))
+			for i, header := range headers {
+				maxWidths[i] = header.Width
 			}
 
 			for _, row := range rows {

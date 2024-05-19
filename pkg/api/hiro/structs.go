@@ -153,6 +153,11 @@ type BalanceResponse struct {
 	NonFungibleTokens NonFungibleTokens `json:"non_fungible_tokens"`
 }
 
+type BalanceResponseByAddress struct {
+	Address string
+	Resp    BalanceResponse
+}
+
 type ReadOnlyPayload struct {
 	Sender    string   `json:"sender"`
 	Arguments []string `json:"arguments"`
