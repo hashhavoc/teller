@@ -124,9 +124,6 @@ func createSyncCommand(props *props.AppProps) *cli.Command {
 		},
 		Action: func(c *cli.Context) error {
 			principal := c.String("principal")
-			if principal == "" {
-				return cli.Exit("Please provide a principal (address or contract identifier)", 1)
-			}
 			return syncTransactions(props, principal)
 		},
 	}
