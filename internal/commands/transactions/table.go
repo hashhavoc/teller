@@ -111,8 +111,8 @@ func UpdateTableWithPrincipal(m tableModel, principal string) []table.Row {
 		for _, tx := range allTxs {
 			rows = append(rows, table.Row{
 				tx.Tx.TxID,
-				common.ToName(tx.Tx.SenderAddress) + MarkerPrincipal(tx.Tx.SenderAddress, principal),
-				common.ToName(tx.Tx.TokenTransfer.RecipientAddress) + MarkerPrincipal(tx.Tx.SenderAddress, principal),
+				common.ToName(tx.Tx.SenderAddress),
+				common.ToName(tx.Tx.TokenTransfer.RecipientAddress),
 				tx.Tx.TxStatus,
 				common.InsertDecimal(tx.Tx.FeeRate, 6),
 				common.InsertDecimal(tx.Tx.TokenTransfer.Amount, 6),
@@ -125,12 +125,4 @@ func UpdateTableWithPrincipal(m tableModel, principal string) []table.Row {
 		return rows
 	}
 	return m.table.Rows()
-}
-
-func MarkerPrincipal(address string, principal string) string {
-	if address == principal {
-		return "*"
-	} else {
-		return ""
-	}
 }
