@@ -67,8 +67,8 @@ func createViewCommand(props *props.AppProps) *cli.Command {
 			for _, tx := range allTxs {
 				rows = append(rows, table.Row{
 					tx.Tx.TxID,
-					tx.Tx.SenderAddress,
-					tx.Tx.TokenTransfer.RecipientAddress,
+					common.ToName(tx.Tx.SenderAddress),
+					common.ToName(tx.Tx.TokenTransfer.RecipientAddress),
 					tx.Tx.TxStatus,
 					common.InsertDecimal(tx.Tx.FeeRate, 6),
 					common.InsertDecimal(tx.Tx.TokenTransfer.Amount, 6),

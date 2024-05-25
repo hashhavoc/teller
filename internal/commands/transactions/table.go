@@ -1,6 +1,7 @@
 package transactions
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 
@@ -86,8 +87,14 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// Set the sorted rows back to the table
 				m.table.SetRows(currentRows)
 			}
-		}
+		case "n":
+			selectedRow := m.table.SelectedRow()
+			m.table.SetRows(UpdateTableWithPrincipal(m, selectedRow[2]))
 
+		case "b":
+			selectedRow := m.table.SelectedRow()
+			m.table.SetRows(UpdateTableWithPrincipal(m, selectedRow[1]))
+		}
 	}
 	m.table, cmd = m.table.Update(msg)
 	return m, cmd
@@ -95,4 +102,27 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m tableModel) View() string {
 	return common.BaseTableStyle.Render(m.table.View())
+}
+
+func UpdateTableWithPrincipal(m tableModel, principal string) []table.Row {
+	allTxs, err := m.client.GetTransactions(principal)
+	if err == nil {
+		var rows []table.Row
+		for _, tx := range allTxs {
+			rows = append(rows, table.Row{
+				tx.Tx.TxID,
+				common.ToName(tx.Tx.SenderAddress),
+				common.ToName(tx.Tx.TokenTransfer.RecipientAddress),
+				tx.Tx.TxStatus,
+				common.InsertDecimal(tx.Tx.FeeRate, 6),
+				common.InsertDecimal(tx.Tx.TokenTransfer.Amount, 6),
+				common.InsertDecimal(tx.StxReceived, 6),
+				fmt.Sprint(tx.Events.Ft.Transfer),
+				fmt.Sprint(tx.Events.Nft.Transfer),
+				fmt.Sprint(tx.Events.Stx.Transfer),
+			})
+		}
+		return rows
+	}
+	return m.table.Rows()
 }
