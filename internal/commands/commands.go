@@ -9,6 +9,7 @@ import (
 	"github.com/hashhavoc/teller/internal/commands/conf"
 	"github.com/hashhavoc/teller/internal/commands/contract"
 	"github.com/hashhavoc/teller/internal/commands/dex"
+	"github.com/hashhavoc/teller/internal/commands/name"
 	"github.com/hashhavoc/teller/internal/commands/ordinals"
 	"github.com/hashhavoc/teller/internal/commands/props"
 	"github.com/hashhavoc/teller/internal/commands/token"
@@ -68,6 +69,7 @@ func CreateApp(glog log.Logger, version string) *cli.App {
 			dex.CreateDexCommand(props),
 			transactions.CreateTransactionsCommand(props),
 			ordinals.CreateOrdinalsCommand(props),
+			name.CreateNameCommand(props),
 		},
 	}
 	return app

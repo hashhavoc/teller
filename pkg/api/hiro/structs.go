@@ -179,3 +179,13 @@ type ContractDetailsResponse struct {
 }
 
 type ContractHoldersResponse map[string]string
+
+type NameDetails struct {
+	Address      string `json:"address"`
+	Blockchain   string `json:"blockchain"`
+	ExpireBlock  int    `json:"expire_block"`
+	LastTxid     string `json:"last_txid"`
+	Status       string `json:"status"`
+	Zonefile     string `json:"zonefile"`
+	ZonefileHash string `json:"zonefile_hash"`
+}
