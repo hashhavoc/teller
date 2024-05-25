@@ -112,14 +112,18 @@ func createViewCommand(props *props.AppProps) *cli.Command {
 
 func createSyncCommand(props *props.AppProps) *cli.Command {
 	return &cli.Command{
-		Name:      "sync",
-		Usage:     "Sync transactions for a given principal",
-		ArgsUsage: "principal",
+		Name:  "sync",
+		Usage: "Sync transactions for a given principal",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "principal",
+				Aliases:  []string{"p"},
+				Usage:    "Specify the principal",
+				Required: true,
+			},
+		},
 		Action: func(c *cli.Context) error {
-			principal := c.Args().First()
-			if principal == "" {
-				return cli.NewExitError("Please provide a principal (address or contract identifier)", 1)
-			}
+			principal := c.String("principal")
 			return syncTransactions(props, principal)
 		},
 	}

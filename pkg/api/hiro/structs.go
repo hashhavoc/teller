@@ -27,6 +27,20 @@ type TokenTransfer struct {
 	Memo             string `json:"memo,omitempty"`
 }
 
+type ContractCall struct {
+	ContractId        string         `json:"contract_id,omitempty"`
+	FunctionName      string         `json:"function_name,omitempty"`
+	FunctionSignature string         `json:"function_signature,omitempty"`
+	FunctionArgs      []ClarityValue `json:"function_args,omitempty"`
+}
+
+type ClarityValue struct {
+	Hex  string `json:"hex,omitempty"`
+	Repr string `json:"repr,omitempty"`
+	Name string `json:"name,omitempty"`
+	Type string `json:"type,omitempty"`
+}
+
 type Tx struct {
 	TxID                     string        `json:"tx_id,omitempty"`
 	Nonce                    int           `json:"nonce,omitempty"`
@@ -47,6 +61,7 @@ type Tx struct {
 	ParentBurnBlockTime      int           `json:"parent_burn_block_time,omitempty"`
 	ParentBurnBlockTimeIso   time.Time     `json:"parent_burn_block_time_iso,omitempty"`
 	Canonical                bool          `json:"canonical,omitempty"`
+	ContractCall             ContractCall  `json:"contract_call,omitempty"`
 	TxIndex                  int           `json:"tx_index,omitempty"`
 	TxStatus                 string        `json:"tx_status,omitempty"`
 	TxResult                 TxResult      `json:"tx_result,omitempty"`
@@ -54,7 +69,7 @@ type Tx struct {
 	MicroblockSequence       int64         `json:"microblock_sequence,omitempty"`
 	MicroblockCanonical      bool          `json:"microblock_canonical,omitempty"`
 	EventCount               int           `json:"event_count,omitempty"`
-	Events                   []any         `json:"events,omitempty"`
+	Events                   []Event       `json:"events,omitempty"`
 	ExecutionCostReadCount   int           `json:"execution_cost_read_count,omitempty"`
 	ExecutionCostReadLength  int           `json:"execution_cost_read_length,omitempty"`
 	ExecutionCostRuntime     int           `json:"execution_cost_runtime,omitempty"`
@@ -86,6 +101,29 @@ type Events struct {
 	Stx Stx `json:"stx,omitempty"`
 	Ft  Ft  `json:"ft,omitempty"`
 	Nft Nft `json:"nft,omitempty"`
+}
+
+type Event struct {
+	EventIndex  int         `json:"event_index,omitempty"`
+	EventType   string      `json:"event_type,omitempty"`
+	TxId        string      `json:"tx_id,omitempty"`
+	Asset       Asset       `json:"asset,omitempty"`
+	ContractLog ContractLog `json:"contract_log,omitempty"`
+}
+
+type Asset struct {
+	AssetEventType string       `json:"asset_event_type,omitempty"`
+	Sender         string       `json:"sender,omitempty"`
+	Recipient      string       `json:"recipient,omitempty"`
+	Amount         int          `json:"amount,omitempty"`
+	AssetId        string       `json:"asset_id,omitempty"`
+	Value          ClarityValue `json:"value,omitempty"`
+}
+
+type ContractLog struct {
+	ContractId string       `json:"contract_id,omitempty"`
+	Topic      string       `json:"topic,omitempty"`
+	Value      ClarityValue `json:"value,omitempty"`
 }
 
 type TokenResult struct {
