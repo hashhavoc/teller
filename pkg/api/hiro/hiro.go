@@ -434,3 +434,111 @@ func (c *APIClient) GetContractReadOnly(id string, function string, responseType
 		return string(decoded), nil
 	}
 }
+
+func (c *APIClient) GetAllNames() ([]string, error) {
+	var allResults []string
+	page := 1
+
+	for {
+		url := fmt.Sprintf("%s/v1/names?page=%d", c.BaseURL, page)
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Add("Accept", "application/json")
+
+		res, err := c.Client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		defer res.Body.Close()
+
+		if res.StatusCode != 200 {
+			return nil, fmt.Errorf("failed to fetch names: %s", res.Status)
+		}
+
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var response []string
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(response) == 0 {
+			break
+		}
+
+		allResults = append(allResults, response...)
+		page++
+	}
+
+	return allResults, nil
+}
+
+func (c *APIClient) GetNames(page int) ([]string, error) {
+	url := fmt.Sprintf("%s/v1/names?page=%d", c.BaseURL, page)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Accept", "application/json")
+
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf("failed to fetch names: %s", res.Status)
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var response []string
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (c *APIClient) GetName(name string) (NameDetails, error) {
+	url := fmt.Sprintf("%s/v1/names/%s", c.BaseURL, name)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return NameDetails{}, err
+	}
+	req.Header.Add("Accept", "application/json")
+
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return NameDetails{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return NameDetails{}, fmt.Errorf("failed to fetch names: %s", res.Status)
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return NameDetails{}, err
+	}
+
+	var response NameDetails
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return NameDetails{}, err
+	}
+
+	return response, nil
+}
