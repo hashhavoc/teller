@@ -45,6 +45,8 @@ func createLookupCommand(props *props.AppProps) *cli.Command {
 			headers := []table.Column{
 				{Title: "Name", Width: len("0xce6a4bec9c1c3297e2a66cca212e3b29940b93066bedc4700931dea7e98c2d6a")},
 				{Title: "Address", Width: len("SPSR9XHHRG3XYQ59A13Z1WSWESPRDBXCGX9VXEMP")},
+				{Title: "Expire Block", Width: len("5000000")},
+				{Title: "Registered Block", Width: len("5000000")},
 			}
 
 			maxWidths := make([]int, len(headers))
@@ -92,7 +94,7 @@ func createViewCommand(props *props.AppProps) *cli.Command {
 		Action: func(c *cli.Context) error {
 			var rows []table.Row
 
-			allNames, err := props.HeroClient.GetNames(1)
+			allNames, err := props.HeroClient.GetAllNames()
 			if err != nil {
 				return err
 			}
@@ -100,6 +102,9 @@ func createViewCommand(props *props.AppProps) *cli.Command {
 			// Prepare the table
 			headers := []table.Column{
 				{Title: "Name", Width: len("0xce6a4bec9c1c3297e2a66cca212e3b29940b93066bedc4700931dea7e98c2d6a")},
+				{Title: "Address", Width: len("SPSR9XHHRG3XYQ59A13Z1WSWESPRDBXCGX9VXEMP")},
+				{Title: "Expire Block", Width: len("500000000000000")},
+				{Title: "Registered Block", Width: len("500000000000000")},
 			}
 
 			maxWidths := make([]int, len(headers))
@@ -108,7 +113,10 @@ func createViewCommand(props *props.AppProps) *cli.Command {
 			}
 			for _, name := range allNames {
 				rows = append(rows, table.Row{
-					name,
+					name.Name,
+					name.Address,
+					fmt.Sprintf("%d", name.ExpireBlock),
+					fmt.Sprintf("%d", name.RegisteredAt),
 				})
 			}
 

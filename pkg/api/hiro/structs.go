@@ -227,3 +227,16 @@ type NameDetails struct {
 	Zonefile     string `json:"zonefile"`
 	ZonefileHash string `json:"zonefile_hash"`
 }
+
+type NamesListResponse struct {
+	Limit   int     `json:"limit"`
+	Offset  int     `json:"offset"`
+	Total   int     `json:"total"`
+	Results []Names `json:"results"`
+}
+type Names struct {
+	Address      string `json:"address"`
+	Name         string `json:"name"`
+	ExpireBlock  int    `json:"expire_block"`
+	RegisteredAt int    `json:"registered_at"`
+}
