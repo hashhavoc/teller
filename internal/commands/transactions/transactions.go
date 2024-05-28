@@ -3,7 +3,7 @@ package transactions
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
@@ -134,7 +134,7 @@ func syncTransactions(props *props.AppProps, principal string) error {
 
 	// Load existing transactions from the file if it exists
 	var existingTxs []hiro.Transaction
-	if data, err := ioutil.ReadFile(filename); err == nil {
+	if data, err := os.ReadFile(filename); err == nil {
 		if err := json.Unmarshal(data, &existingTxs); err != nil {
 			return err
 		}
@@ -155,7 +155,7 @@ func syncTransactions(props *props.AppProps, principal string) error {
 	if err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile(filename, data, 0644); err != nil {
+	if err := os.WriteFile(filename, data, 0644); err != nil {
 		return err
 	}
 

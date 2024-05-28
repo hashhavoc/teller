@@ -1,7 +1,9 @@
-package name
+package names
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
@@ -13,11 +15,12 @@ import (
 
 func CreateNameCommand(props *props.AppProps) *cli.Command {
 	return &cli.Command{
-		Name:  "name",
+		Name:  "names",
 		Usage: "Provides interactions with names",
 		Subcommands: []*cli.Command{
 			createViewCommand(props),
 			createLookupCommand(props),
+			createSyncCommand(props),
 		},
 	}
 }
@@ -85,6 +88,38 @@ func createLookupCommand(props *props.AppProps) *cli.Command {
 			return nil
 		},
 	}
+}
+
+func createSyncCommand(props *props.AppProps) *cli.Command {
+	return &cli.Command{
+		Name:  "sync",
+		Usage: "sync names",
+		Action: func(c *cli.Context) error {
+			return syncNames(props)
+		},
+	}
+}
+
+func syncNames(props *props.AppProps) error {
+	filename := "names.json"
+
+	// Fetch transactions from the Hiro API until the total matches the local count
+	allNames, err := props.HeroClient.GetAllNames()
+	if err != nil {
+		return err
+	}
+
+	// Save updated transactions to the file
+	data, err := json.MarshalIndent(allNames, "", "  ")
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile(filename, data, 0644); err != nil {
+		return err
+	}
+
+	fmt.Printf("Synced %d names \n", len(data))
+	return nil
 }
 
 func createViewCommand(props *props.AppProps) *cli.Command {
