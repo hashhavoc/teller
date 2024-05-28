@@ -10,6 +10,7 @@ import (
 
 	"github.com/hashhavoc/teller/internal/commands/props"
 	"github.com/hashhavoc/teller/internal/common"
+	"github.com/jszwec/csvutil"
 	"github.com/urfave/cli/v2"
 )
 
@@ -94,31 +95,54 @@ func createSyncCommand(props *props.AppProps) *cli.Command {
 	return &cli.Command{
 		Name:  "sync",
 		Usage: "sync names",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "file",
+				Aliases:  []string{"f"},
+				Usage:    "the filename to output to",
+				Required: true,
+			},
+			&cli.StringFlag{
+				Name:     "type",
+				Aliases:  []string{"t"},
+				Usage:    "The format to output to (json, csv)",
+				Required: true,
+			},
+		},
 		Action: func(c *cli.Context) error {
-			return syncNames(props)
+			return syncNames(props, c.String("type"), c.String("file"))
 		},
 	}
 }
 
-func syncNames(props *props.AppProps) error {
-	filename := "names.json"
+func syncNames(props *props.AppProps, format string, filename string) error {
+	var data []byte
+	var err error
 
-	// Fetch transactions from the Hiro API until the total matches the local count
 	allNames, err := props.HeroClient.GetAllNames()
 	if err != nil {
 		return err
 	}
 
-	// Save updated transactions to the file
-	data, err := json.MarshalIndent(allNames, "", "  ")
+	switch format {
+	case "csv":
+		data, err = csvutil.Marshal(allNames)
+	case "json":
+		data, err = json.MarshalIndent(allNames, "", "  ")
+	default:
+		return fmt.Errorf("unsupported format: %s", format)
+	}
+
 	if err != nil {
+		fmt.Println("error:", err)
 		return err
 	}
+
 	if err := os.WriteFile(filename, data, 0644); err != nil {
 		return err
 	}
 
-	fmt.Printf("Synced %d names \n", len(allNames))
+	fmt.Printf("Synced %d BNS Name Records to %s\n", len(allNames), filename)
 	return nil
 }
 
