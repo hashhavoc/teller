@@ -1,4 +1,4 @@
-package name
+package names
 
 import (
 	"sort"
@@ -40,25 +40,17 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				m.table.Focus()
 			}
-		case "p":
-			m.page += 1
-			results, err := m.client.GetNames(m.page)
+		case "s":
+			err := common.WriteRowsToCSV(m.table.Rows(), "names.csv")
 			if err != nil {
-				m.logger.Error().Err(err).Msg("Failed to get names")
+				return m, nil
 			}
-			var rows []table.Row
-			for _, result := range results {
-				rows = append(rows, table.Row{
-					result,
-				})
-			}
-			oldRows := m.table.Rows()
-			m.table.SetRows(append(oldRows, rows...))
+			m.logger.Info().Msg("Table dumped to names.csv")
 		case "q", "ctrl+c":
 			return m, tea.Quit
 		case "enter":
 			selectedRow := m.table.SelectedRow()
-			utils.OpenBrowser("https://explorer.hiro.so/txid/" + selectedRow[0])
+			utils.OpenBrowser("https://explorer.hiro.so/address/" + selectedRow[1])
 		case "1", "2", "3", "4", "5", "6", "7", "8", "9":
 			columnIndex := int(msg.Runes[0] - '1') // Convert rune to int and adjust for 0-based indexing
 			currentRows := m.table.Rows()

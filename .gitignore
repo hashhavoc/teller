@@ -125,3 +125,4 @@ config.yaml
 *.csv
 teller
 *transactions.json
+*.json
