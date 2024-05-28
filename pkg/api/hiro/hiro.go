@@ -435,12 +435,13 @@ func (c *APIClient) GetContractReadOnly(id string, function string, responseType
 	}
 }
 
-func (c *APIClient) GetAllNames() ([]string, error) {
-	var allResults []string
-	page := 1
+func (c *APIClient) GetAllNames() ([]Names, error) {
+	var allResults []Names
+	offset := 0
+	limit := 100000 // or any other limit you want to set
 
 	for {
-		url := fmt.Sprintf("%s/v1/names?page=%d", c.BaseURL, page)
+		url := fmt.Sprintf("%s/v2/names?offset=%d&limit=%d", c.BaseURL, offset, limit)
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			return nil, err
@@ -454,7 +455,7 @@ func (c *APIClient) GetAllNames() ([]string, error) {
 		defer res.Body.Close()
 
 		if res.StatusCode != 200 {
-			return nil, fmt.Errorf("failed to fetch names: %s", res.Status)
+			return nil, fmt.Errorf("failed to get contract source: %s", res.Status)
 		}
 
 		body, err := io.ReadAll(res.Body)
@@ -462,22 +463,67 @@ func (c *APIClient) GetAllNames() ([]string, error) {
 			return nil, err
 		}
 
-		var response []string
+		var response NamesListResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			return nil, err
 		}
 
-		if len(response) == 0 {
+		allResults = append(allResults, response.Results...)
+
+		if len(allResults) >= response.Total {
 			break
 		}
 
-		allResults = append(allResults, response...)
-		page++
+		offset += limit
 	}
 
 	return allResults, nil
 }
+
+// func (c *APIClient) GetAllNames() ([]string, error) {
+// 	var allResults []string
+// 	page := 1
+
+// 	for {
+// 		url := fmt.Sprintf("%s/v1/names?page=%d", c.BaseURL, page)
+// 		req, err := http.NewRequest("GET", url, nil)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		req.Header.Add("Accept", "application/json")
+
+// 		res, err := c.Client.Do(req)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		defer res.Body.Close()
+
+// 		if res.StatusCode != 200 {
+// 			return nil, fmt.Errorf("failed to fetch names: %s", res.Status)
+// 		}
+
+// 		body, err := io.ReadAll(res.Body)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+
+// 		var response []string
+// 		err = json.Unmarshal(body, &response)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+
+// 		if len(response) == 0 {
+// 			break
+// 		}
+
+// 		allResults = append(allResults, response...)
+// 		page++
+// 	}
+
+// 	return allResults, nil
+// }
 
 func (c *APIClient) GetNames(page int) ([]string, error) {
 	url := fmt.Sprintf("%s/v1/names?page=%d", c.BaseURL, page)
