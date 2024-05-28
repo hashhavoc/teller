@@ -118,7 +118,7 @@ func syncNames(props *props.AppProps) error {
 		return err
 	}
 
-	fmt.Printf("Synced %d names \n", len(data))
+	fmt.Printf("Synced %d names \n", len(allNames))
 	return nil
 }
 
