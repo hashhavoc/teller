@@ -240,3 +240,11 @@ type Names struct {
 	ExpireBlock  int    `json:"expire_block"`
 	RegisteredAt int    `json:"registered_at"`
 }
+
+type NameReverseLookupResponse struct {
+	Names []string `json:"names"`
+}
+
+type NameZoneFileResponse struct {
+	Zonefile string `json:"zonefile"`
+}
