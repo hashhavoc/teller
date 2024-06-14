@@ -11,7 +11,7 @@ require (
 	github.com/hashhavoccat/stacks-go v0.0.0-20240404042855-623fe7696f55
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
 	github.com/jszwec/csvutil v1.10.0
-	github.com/phuslu/log v1.0.101
+	github.com/phuslu/log v1.0.104
 	github.com/pkg/errors v0.9.1
 	github.com/urfave/cli/v2 v2.27.2
 	gopkg.in/yaml.v2 v2.4.0
