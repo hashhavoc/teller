@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-const DefaultApiBase = "https://stacks.hashhavoc.com"
+const DefaultApiBase = "https://api.hiro.so"
 
 type APIClient struct {
 	BaseURL string
