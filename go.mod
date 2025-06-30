@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.5
-	github.com/charmbracelet/bubbles v0.18.0
+	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.5
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/google/go-querystring v1.1.0
