@@ -13,7 +13,7 @@ import (
 	"github.com/hashhavoc/teller/internal/common"
 	"github.com/hashhavoc/teller/pkg/api/hiro"
 	"github.com/hashhavoc/teller/pkg/utils"
-	"github.com/hashhavoccat/stacks-go"
+	"github.com/okx/go-wallet-sdk/coins/stacks"
 	"github.com/urfave/cli/v2"
 )
 
@@ -74,7 +74,7 @@ func createGenerateWalletCommand(props *props.AppProps) *cli.Command {
 			case "mainnet":
 				networkVersion = stacks.MainnetSingleSig
 			case "testnet":
-				networkVersion = stacks.TestnetSingleSig
+				networkVersion = 26 // Testnet single sig version
 			default:
 				props.Logger.Error().Msg("Invalid network type. Please specify either 'mainnet' or 'testnet'.")
 				return nil
