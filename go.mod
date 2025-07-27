@@ -13,6 +13,7 @@ require (
 	github.com/okx/go-wallet-sdk/coins/stacks v0.0.0-20250710020511-79e46c64d8f5
 	github.com/phuslu/log v1.0.118
 	github.com/pkg/errors v0.9.1
+	github.com/sashabaranov/go-openai v1.40.5
 	github.com/urfave/cli/v2 v2.27.7
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -23,6 +24,7 @@ replace github.com/okx/go-wallet-sdk/coins/stacks => github.com/hashhavoc/go-wal
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
+	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce // indirect
 	github.com/charmbracelet/colorprofile v0.2.3-0.20250311203215-f60798e515dc // indirect

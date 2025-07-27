@@ -9,3 +9,16 @@ endpoints:
 wallets:
   - SPZY2PR8WW2N3JSAWTFPJGTA7DW1AGFKCC0VHMVK
   - SP24478XYAB7DZF7850JWVYQRGGRKDWXF7WKKRY30
+openai:
+  # Get your API key from https://platform.openai.com/api-keys
+  # You can also set the OPENAI_API_KEY environment variable instead
+  api_key: ""
+  # Available models: gpt-4, gpt-4-turbo, gpt-3.5-turbo, etc.
+  model: "gpt-4"
+  # Base URL for OpenAI API - useful for self-hosted or alternative LLM endpoints
+  # Default: https://api.openai.com/v1
+  # Examples for other providers:
+  # - OpenAI-compatible local models: http://localhost:1234/v1
+  # - Azure OpenAI: https://your-resource.openai.azure.com/openai/deployments/your-deployment
+  # - Anthropic Claude (via proxy): https://your-proxy/v1
+  base_url: "https://api.openai.com/v1"

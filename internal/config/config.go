@@ -16,6 +16,7 @@ type Config struct {
 	Path      string          `yaml:"-"`
 	Endpoints ConfigEndpoints `yaml:"endpoints"`
 	Wallets   []string        `yaml:"wallets"`
+	OpenAI    OpenAIConfig    `yaml:"openai"`
 }
 
 type ConfigEndpoints struct {
@@ -26,6 +27,12 @@ type ConfigEndpoints struct {
 	Bob      string `yaml:"bob"`
 }
 
+type OpenAIConfig struct {
+	APIKey  string `yaml:"api_key"`
+	Model   string `yaml:"model"`
+	BaseURL string `yaml:"base_url"`
+}
+
 func NewConfig(path string) *Config {
 	config := &Config{
 		Path: path,
@@ -34,6 +41,11 @@ func NewConfig(path string) *Config {
 			Alex:     alex.DefaultApiBase,
 			StxTools: stxtools.DefaultApiBase,
 			Bob:      gobob.DefaultApiBase,
+		},
+		OpenAI: OpenAIConfig{
+			APIKey:  "",                          // Will be set from environment or config
+			Model:   "gpt-4",                     // Default model
+			BaseURL: "https://api.openai.com/v1", // Default OpenAI base URL
 		},
 	}
 	return config

@@ -26,6 +26,14 @@ teller conf init
 
 This will create a new configuration file at `~/.teller.yaml` with the default values. You can then edit this file to your liking. There is not currently a way to specify the configuration file location. Not all of the endpoints are avaliable publicly, so you may need to specify your own endpoints.
 
+The configuration file supports:
+
+- **API Endpoints**: Configure custom endpoints for Hiro, Alex DEX, STXTools, BOB, and Ord
+- **Wallet Addresses**: Pre-configure wallet addresses for quick access
+- **OpenAI Integration**: Set up API keys, models, and custom base URLs for LLM functionality
+
+See the [LLM Assistant](#llm-assistant) section for detailed OpenAI configuration options.
+
 ## Source
 
 ### Building
@@ -80,6 +88,7 @@ COMMANDS:
    dex            Provides interactions with multiple dex
    transactions   Provides interactions with transactions
    ordinals, ord  Provides interactions with ordinals
+   llm            Interactive AI assistant for Stacks blockchain queries
    help, h        Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -97,7 +106,86 @@ Teller offers the following commands:
 - **dex**: Provides interactions with multiple decentralized exchanges.
 - **transactions**: Provides interactions with transactions.
 - **ordinals**: Provides interactions with ordinals on bitcoin.
+- **llm**: Interactive AI assistant for Stacks blockchain queries with natural language interface.
 - **help**: Shows a list of commands or help for one command.
+
+## LLM Assistant
+
+Teller includes an intelligent AI assistant that provides a conversational interface for exploring Stacks blockchain data. The assistant can automatically fetch and analyze blockchain information based on natural language queries.
+
+### Features
+
+- **Natural Language Queries**: Ask questions about blockchain data in plain English
+- **Automatic Data Fetching**: Intelligent detection and retrieval of relevant blockchain information
+- **Interactive Chat Interface**: Beautiful terminal UI similar to modern AI chat applications
+- **Conversation Memory**: Maintains context across multiple interactions
+- **Multi-API Integration**: Seamlessly queries Hiro, Alex DEX, STXTools, and other blockchain APIs
+
+### Capabilities
+
+The AI assistant can help with:
+
+- **Account Information**: Check balances and transaction history for Stacks addresses
+- **Token Analysis**: Explore fungible and non-fungible token data
+- **DEX Data**: Get current prices and trading information from Alex protocol
+- **Contract Exploration**: Analyze smart contracts and their functions
+- **Network Status**: Check current blockchain state and network information
+- **BNS Lookups**: Search and analyze Stacks naming system data
+- **Ordinals & Runes**: Explore Bitcoin ordinals and runes data
+
+### Usage
+
+Start an interactive chat session:
+
+```sh
+teller llm chat
+```
+
+Use a specific model:
+
+```sh
+teller llm chat --model gpt-3.5-turbo
+```
+
+### Example Queries
+
+```
+> What's the balance for SP1ABC123...?
+> Show me recent token data from STXTools
+> What are the current DEX prices on Alex?
+> Tell me about contract SP456DEF...
+> How is the Stacks network performing?
+> Look up the BNS name "example.btc"
+```
+
+### Configuration
+
+Add OpenAI configuration to your `~/.teller.yaml`:
+
+```yaml
+openai:
+  # Get your API key from https://platform.openai.com/api-keys
+  # You can also set the OPENAI_API_KEY environment variable instead
+  api_key: "your-openai-api-key"
+  
+  # Available models: gpt-4, gpt-4-turbo, gpt-3.5-turbo, etc.
+  model: "gpt-4"
+  
+  # Base URL for OpenAI API - useful for self-hosted or alternative LLM endpoints
+  # Default: https://api.openai.com/v1
+  # Examples for other providers:
+  # - OpenAI-compatible local models: http://localhost:1234/v1
+  # - Azure OpenAI: https://your-resource.openai.azure.com/openai/deployments/your-deployment
+  # - Anthropic Claude (via proxy): https://your-proxy/v1
+  base_url: "https://api.openai.com/v1"
+```
+
+Alternatively, set the API key via environment variable:
+
+```sh
+export OPENAI_API_KEY="your-openai-api-key"
+teller llm chat
+```
 
 ## Support
 
