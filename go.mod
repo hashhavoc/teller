@@ -11,7 +11,7 @@ require (
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
 	github.com/jszwec/csvutil v1.10.0
 	github.com/okx/go-wallet-sdk/coins/stacks v0.0.0-20250710020511-79e46c64d8f5
-	github.com/phuslu/log v1.0.118
+	github.com/phuslu/log v1.0.119
 	github.com/pkg/errors v0.9.1
 	github.com/urfave/cli/v2 v2.27.7
 	gopkg.in/yaml.v2 v2.4.0
