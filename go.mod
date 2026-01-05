@@ -7,7 +7,7 @@ require (
 	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.6
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/google/go-querystring v1.1.0
+	github.com/google/go-querystring v1.2.0
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
 	github.com/jszwec/csvutil v1.10.0
 	github.com/okx/go-wallet-sdk/coins/stacks v0.0.0-20250710020511-79e46c64d8f5
